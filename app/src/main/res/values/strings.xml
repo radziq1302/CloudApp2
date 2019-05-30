@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Cognito log in app</string>
+    <string name="title_activity_display">RegisterActivity</string>
+    <string name="title_activity_get_user_data">GetUserDataActivity</string>
+    <string name="genders">Płeć</string>
+
+    <string-array name="gender_arrays">
+        <item>Kobieta</item>
+        <item>Mężczyzna</item>
+        <item>Wolę nie podawać</item>
+    </string-array>
+    <string name="title_activity_main_view">MainViewActivity</string>
+    <string name="activities">Aktywność</string>
+
+    <string-array name="activities_arrays">
+        <item>Niska (raz w miesiącu)</item>
+        <item>Średnia (raz w tygodniu) </item>
+        <item>Wysoka (5 razy w tygodniu)</item>
+    </string-array>
+</resources>
