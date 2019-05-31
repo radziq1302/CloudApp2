@@ -16,7 +16,7 @@
         android:layout_marginTop="144dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="tomson"
+        android:text="tomtom"
         app:layout_constraintBottom_toTopOf="@+id/editText7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"

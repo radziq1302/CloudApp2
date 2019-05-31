@@ -24,6 +24,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.S3Object;
+import com.example.cloudapp2.MainWindowActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class GetUserDataActivity extends AppCompatActivity {
 
                     //uploadWithTransferUtility();
 
-                    Intent validDataSent = new Intent(GetUserDataActivity.this, Menu.class);
+                    Intent validDataSent = new Intent(GetUserDataActivity.this, MainWindowActivity.class);
                     GetUserDataActivity.this.startActivity(validDataSent);
                 }
                 else {

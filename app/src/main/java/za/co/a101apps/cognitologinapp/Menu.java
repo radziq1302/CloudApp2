@@ -22,26 +22,26 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
         Button buttonVerify = findViewById(R.id.buttonVerify);
         buttonVerify.setOnClickListener(this);
 
-        Button buttonRequestCode = findViewById(R.id.buttonRequestCode);
+        /*Button buttonRequestCode = findViewById(R.id.buttonRequestCode);
         buttonRequestCode.setOnClickListener(this);
 
         Button buttonForgotPassword = findViewById(R.id.buttonForgotPassword);
         buttonForgotPassword.setOnClickListener(this);
-
-        Button buttonChangePassword = findViewById(R.id.buttonChangePassword);
-        buttonChangePassword.setOnClickListener(this);
-
+*/
+        /*Button buttonChangePassword = findViewById(R.id.buttonChangePassword);
+        buttonChangePassword.setOnClickListener(this);*/
+/*
         Button buttonGetTokens = findViewById(R.id.buttonGetTokens);
-        buttonGetTokens.setOnClickListener(this);
+        buttonGetTokens.setOnClickListener(this);*/
 
-        Button buttonLogout = findViewById(R.id.buttonLogout);
+    /*    Button buttonLogout = findViewById(R.id.buttonLogout);
         buttonLogout.setOnClickListener(this);
-
-        Button buttonGetUserDetails = findViewById(R.id.buttonGetDetails);
+*/
+        /*Button buttonGetUserDetails = findViewById(R.id.buttonGetDetails);
         buttonGetUserDetails.setOnClickListener(this);
 
         Button buttonShowMe = findViewById(R.id.buttonShowMe);
-        buttonShowMe.setOnClickListener(this);
+        buttonShowMe.setOnClickListener(this);*/
     }
 
     @Override
@@ -59,34 +59,34 @@ public class Menu extends AppCompatActivity implements View.OnClickListener {
                 Intent intentVerify = new Intent(this, VerifyActivity.class);
                 startActivity(intentVerify);
                 break;
-            case R.id.buttonRequestCode:
+           /* case R.id.buttonRequestCode:
                 Intent intentResendCode = new Intent(this, GetConfirmationCodeActivity.class);
                 startActivity(intentResendCode);
                 break;
             case R.id.buttonForgotPassword:
                 Intent intentForgotPassword = new Intent(this, ForgotPasswordActivity.class);
                 startActivity(intentForgotPassword);
-                break;
+                break;*/
             case R.id.buttonChangePassword:
                 Intent intentChangePassword = new Intent(this, ChangePasswordActivity.class);
                 startActivity(intentChangePassword);
                 break;
-            case R.id.buttonGetTokens:
+           /* case R.id.buttonGetTokens:
                 Intent intentGetTokens = new Intent(this, DbActivity.class);//GetTokensActivity.class);
                 startActivity(intentGetTokens);
-                break;
-            case R.id.buttonLogout:
+                break;*/
+          /*  case R.id.buttonLogout:
                 Intent intentLogout = new Intent(this, LogoutActivity.class);
                 startActivity(intentLogout);
-                break;
-            case R.id.buttonGetDetails:
+                break;*/
+           /* case R.id.buttonGetDetails:
                 Intent intentGetUserDetails = new Intent(this, GetUserDetailsActivity.class);
                 startActivity(intentGetUserDetails);
                 break;
             case R.id.buttonShowMe:
                 Intent intentShowMe = new Intent(this, ShowMeActivity1.class);
                 startActivity(intentShowMe);
-                break;
+                break;*/
         }
     }
 }

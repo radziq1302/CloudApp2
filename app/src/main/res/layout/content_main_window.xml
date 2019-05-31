@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".MainWindowActivity"
-    tools:showIn="@layout/activity_main_window">
+    android:paddingLeft="16dp"
+    android:gravity="center"
+    android:paddingRight="16dp" >
 
-</android.support.constraint.ConstraintLayout>
+    <Button
+        android:id="@+id/buttonGetDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get User details" />
+
+    <Button
+        android:id="@+id/buttonShowMe"
+        android:layout_below="@id/buttonGetDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Me" />
+
+    <Button
+        android:id="@+id/buttonGetTokens"
+        android:layout_below="@id/buttonShowMe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get tokens" />
+
+
+
+    </RelativeLayout>

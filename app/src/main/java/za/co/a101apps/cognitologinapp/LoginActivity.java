@@ -31,6 +31,8 @@ public class LoginActivity extends AppCompatActivity {
         final EditText editTextUsername = findViewById(R.id.editTextUsername);
         final EditText editTextPassword = findViewById(R.id.editTextPassword);
 
+        editTextPassword.setTransformationMethod(new AsteriskPasswordTransformationMethod());
+
         final AuthenticationHandler authenticationHandler = new AuthenticationHandler() {
             @Override
             public void onSuccess(CognitoUserSession userSession, CognitoDevice newDevice) {
@@ -97,8 +99,9 @@ public class LoginActivity extends AppCompatActivity {
                 Log.i(TAG, "in button clicked....");
 
                 thisUser.getSessionInBackground(authenticationHandler);
+
                 if (flag==true){
-                    Intent i = new Intent(LoginActivity.this, Menu.class);
+                    Intent i = new Intent(LoginActivity.this, GetUserDataActivity.class);
                     LoginActivity.this.startActivity(i);
                 }
                 else {
