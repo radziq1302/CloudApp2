@@ -3,31 +3,25 @@ package za.co.a101apps.cognitologinapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.PopupWindow;
-import android.widget.EditText;
-import android.support.design.widget.TextInputEditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.S3Object;
-import com.example.cloudapp2.MainWindowActivity;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class GetUserDataActivity extends AppCompatActivity {
 
@@ -39,6 +33,7 @@ public class GetUserDataActivity extends AppCompatActivity {
     private TextInputEditText wiek;
     private Spinner plec; //gender_spinner
     private Spinner aktywnosc; //activity_spinner
+    private String username;
 
     private boolean valid = true;
     PopupWindow popUp;
@@ -57,6 +52,11 @@ public class GetUserDataActivity extends AppCompatActivity {
         plec = (Spinner) findViewById(R.id.gender_spinner);
         aktywnosc = (Spinner) findViewById(R.id.activity_spinner);
 
+        final CognitoSettings cognitoSettings = new CognitoSettings(this);
+        CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
+
+        username = currentUser.getUserId();
+
         wyslij.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,6 +71,7 @@ public class GetUserDataActivity extends AppCompatActivity {
 
                 if(valid) {
                     Log.i("hi","jest ok");
+                    Log.i("Username : ", username);
 
                     //uploadWithTransferUtility();
 
@@ -78,7 +79,7 @@ public class GetUserDataActivity extends AppCompatActivity {
                     GetUserDataActivity.this.startActivity(validDataSent);
                 }
                 else {
-                    // popup zeby uzupelnic
+                    Toast.makeText(GetUserDataActivity.this, "wypełnij wszystkie pola", Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -1,21 +1,12 @@
-package com.example.cloudapp2;
+package za.co.a101apps.cognitologinapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
-import za.co.a101apps.cognitologinapp.DbActivity;
-import za.co.a101apps.cognitologinapp.ForgotPasswordActivity;
-import za.co.a101apps.cognitologinapp.GetConfirmationCodeActivity;
-import za.co.a101apps.cognitologinapp.GetUserDetailsActivity;
-import za.co.a101apps.cognitologinapp.LogoutActivity;
-import za.co.a101apps.cognitologinapp.R;
-import za.co.a101apps.cognitologinapp.ShowMeActivity1;
 
 
 public class MainWindowActivity extends AppCompatActivity implements View.OnClickListener {
@@ -34,6 +25,9 @@ public class MainWindowActivity extends AppCompatActivity implements View.OnClic
 
         Button buttonShowMe = findViewById(R.id.buttonShowMe);
         buttonShowMe.setOnClickListener(this);
+
+        Button buttonNew = findViewById(R.id.buttonNew);
+        buttonNew.setOnClickListener(this);
     }
 
     @Override
@@ -53,6 +47,14 @@ public class MainWindowActivity extends AppCompatActivity implements View.OnClic
                 Intent intentGetTokens = new Intent(this, DbActivity.class);//GetTokensActivity.class);
                 startActivity(intentGetTokens);
                 break;
+
+            case R.id.buttonNew:
+                Log.i("Tutaj", "Adding new object to database:  ?????? ");
+                DBUserData userdata = new DBUserData("7", "Kasia", "123", "123", "123", "K", "N");
+                DbActivity dba = new DbActivity();
+                Context context = MainWindowActivity.this;
+                dba.addDataToDB("User data", userdata, context);
+                Log.i("Tutaj", "Dodano  ?????? ");
         }
     }
 

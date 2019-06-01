@@ -19,6 +19,7 @@ public class CognitoSettings {
 
 
     public CognitoSettings(Context context) {
+
         this.context = context;
     }
 

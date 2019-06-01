@@ -1,5 +1,6 @@
 package za.co.a101apps.cognitologinapp;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.AsyncTask;
@@ -44,14 +45,16 @@ public class DbActivity extends AppCompatActivity {
                 getItemTask.execute(telephoneNumber);
             }
         });
+
         Button buttonPutItem = findViewById(R.id.buttonPutItem);
+
         buttonPutItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AddItemAsyncTask addItemTask = new AddItemAsyncTask();
                 /*get a random contact (name and telephone only)*/
                 Log.i(TAG, "getting random contact...");
-                Woda woda = new Woda("2","10","2019-02-12");
+                Woda woda = new Woda("4","10","2019-02-12");
                 textViewItem.setText("Adding contact: " + woda.getID());
 
 
@@ -75,6 +78,40 @@ public class DbActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void addDataToDB(String dataType, DBObject object, Context context) {
+
+        DbActivity.this.attachBaseContext(context);
+
+        AddItemAsyncTask addItemTask = new AddItemAsyncTask();
+        /*get a random contact (name and telephone only)*/
+        Log.i(TAG, "getting the passed object of type..." + dataType);
+
+      /*  switch(dataType) {
+            case "WODA":
+                // code block
+                break;
+            case "USER_DATA":
+                // code block
+                break;
+            default:
+                Log.i(TAG, "Cos poszlo nie tak przy wybieraniu switch ");
+        }*/
+
+        Log.i(TAG, "Adding new object to database: " + object);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(object);
+
+        Document doc = Document.fromJson(json);
+
+        addItemTask.execute(doc);
+
+        Log.i(TAG, "Chyba dodano ?? Obiekt typu " + object);
+
+    }
+
+
     private class GetItemAsyncTask extends AsyncTask<String, Void, Document> {
         @Override
         protected Document doInBackground(String... id) {
@@ -158,18 +195,22 @@ public class DbActivity extends AppCompatActivity {
 
             if (result == null) {
                 /*for ReturnValue.NONE*/
-                textViewItem.setText("Contact added");
-                textViewItem.setBackgroundColor(Color.GREEN);
+                //textViewItem.setText("Contact added");
+                //textViewItem.setBackgroundColor(Color.GREEN);
+                Log.i(TAG, "Contact added, no return data");
                 message = "Contact added, no return data";
             } else {
                 /*for ReturnValue.ALL_OLD*/
-                textViewItem.setText("Contact added");
-                textViewItem.setBackgroundColor(Color.YELLOW);
+                //textViewItem.setText("Contact added");
+                //textViewItem.setBackgroundColor(Color.YELLOW);
+                Log.i(TAG, "Contact added, return data" + result);
                 message = "Contact added, return data: " + result;
             }
 
             Log.i(TAG, "adding item result: " + message);
         }
     }
+
+
 
 }

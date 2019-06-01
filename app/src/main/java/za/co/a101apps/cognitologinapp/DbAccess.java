@@ -40,9 +40,11 @@ public class DbAccess {
     private Table dbTable;
     private static volatile DbAccess instance;
     private String TAG = "TomekJestSuper";
+
     private DbAccess(Context context) {
         this.context = context;
         final CognitoSettings cognitoSettings = new CognitoSettings(this.context);
+
         //credentialsProvider = new CognitoCachingCredentialsProvider(context, "us-east-2:59abf0c1-9231-45f4-bb7f-714113f76dc7", COGNITO_IDENTITY_POOL_REGION);
         credentialsProvider = cognitoSettings.getCredentialsProvider();
         CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
@@ -55,6 +57,7 @@ public class DbAccess {
     }
     public static synchronized DbAccess getInstance(Context context) {
         if (instance == null) {
+             Log.i("Kasia tez", "tworzenie nowej instancji bazy ? ");
              instance = new DbAccess(context);
         }
         return instance;

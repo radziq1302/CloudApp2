@@ -1,21 +1,20 @@
 package za.co.a101apps.cognitologinapp;
 
-public class Woda {
+public class Woda extends DBObject {
 
-    String ID;
+
     String number;
     String date;
 
-    public Woda(String ID, String num, String date) {
-        this.ID=ID;
+    public Woda(String id, String num, String date) {
+        super();
+        this.ID = id;
         this.number=num;
         this.date=date;
 //        required constructor
     }
 
-    public String getID() {
-        return ID;
-    }
+
     public String getNumber() {
         return number;
     }
