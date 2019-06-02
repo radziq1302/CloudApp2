@@ -1,5 +1,6 @@
 package za.co.a101apps.cognitologinapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -71,9 +72,13 @@ public class GetUserDataActivity extends AppCompatActivity {
 
                 if(valid) {
                     Log.i("hi","jest ok");
-                    Log.i("Username : ", username);
+                    // Log.i("nowy wzrost : ", wzrost.getText().toString());
 
-                    //uploadWithTransferUtility();
+                    DBUserData userdata = new DBUserData("10", username, waga.getText().toString(), wzrost.getText().toString(), wiek.getText().toString(),
+                            plec.getSelectedItem().toString(),aktywnosc.getSelectedItem().toString());
+                    DbActivity dba = new DbActivity();
+                    Context context = GetUserDataActivity.this;
+                    dba.addDataToDB("User data", userdata, context);
 
                     Intent validDataSent = new Intent(GetUserDataActivity.this, MainWindowActivity.class);
                     GetUserDataActivity.this.startActivity(validDataSent);
