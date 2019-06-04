@@ -14,7 +14,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".loadingActivity"></activity>
+        <activity android:name=".loadingActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainWindowActivity"
             android:label="@string/title_activity_main_window"
@@ -24,13 +30,8 @@
             android:label="@string/title_activity_get_user_data"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ChangePasswordActivity$DbActivity" />
-        <activity android:name=".Menu">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".Menu"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".RegisterActivity"
             android:label="@string/title_activity_display"
