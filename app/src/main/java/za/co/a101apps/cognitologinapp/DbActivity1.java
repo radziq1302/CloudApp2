@@ -1,11 +1,9 @@
 package za.co.a101apps.cognitologinapp;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.os.AsyncTask;
-import android.os.StrictMode;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,94 +11,36 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.mobile.client.AWSMobileClient;
-import com.amazonaws.mobile.client.UserStateDetails;
-import com.amazonaws.mobile.client.UserStateListener;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
-public class DbActivity extends AppCompatActivity {
+public class DbActivity1 extends AppCompatActivity {
 
     private String TAG = "DynamoDb_Demo";
     private TextView textViewItem;
-    private CognitoCachingCredentialsProvider credentialsProvider;
-    private Button buttonBack;
-    private DBUserData dane;
+    public CognitoCachingCredentialsProvider credentialsProvider;
+    private CognitoSettings cognitoSettings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_db);
-
-        try {
-            dane = (DBUserData) getIntent().getSerializableExtra("daneFormularza");
-            final String ajDi = (String) getIntent().getStringExtra("idZasrane");
-            dane.setID(ajDi);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+        cognitoSettings = new CognitoSettings(this);
+        credentialsProvider = cognitoSettings.getCredentialsProvider();
         textViewItem = findViewById(R.id.textViewItem);
         textViewItem.setText("Press a button...");
         textViewItem.setBackgroundColor(Color.GREEN);
         Button buttonGetItem = findViewById(R.id.buttonGetItem);
-        buttonBack=findViewById(R.id.buttonBack);
-
-
-        //final CognitoSettings cognitoSettings = new CognitoSettings(this);
-        //credentialsProvider = cognitoSettings.getCredentialsProvider();
-        //CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
-
-        AWSMobileClient.getInstance().addUserStateListener(new UserStateListener() {
-            @Override
-            public void onUserStateChanged(UserStateDetails userStateDetails) {
-                switch (userStateDetails.getUserState()){
-                    case GUEST:
-                        Log.i("userState", "user is in guest mode");
-                        break;
-                    case SIGNED_OUT:
-                        Log.i("userState", "user is signed out");
-                        break;
-                    case SIGNED_IN:
-                        Log.i("userState", "user is signed in");
-                        break;
-                    case SIGNED_OUT_USER_POOLS_TOKENS_INVALID:
-                        Log.i("userState", "need to login again");
-                        break;
-                    case SIGNED_OUT_FEDERATED_TOKENS_INVALID:
-                        Log.i("userState", "user logged in via federation, but currently needs new tokens");
-                        break;
-                    default:
-                        Log.e("userState", "unsupported");
-                }
-            }
-        });
-
-        buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AddItemAsyncTask addItemTask;
-                if (dane != null) {
-                    Log.v("cojest",dane.getID()+dane.getWaga()+"");
-                    addItemTask = new AddItemAsyncTask();
-                    Log.i(TAG, "getting random contact...");
-                    textViewItem.setText("Adding contact: ");
-                    Log.i(TAG, "Adding data: ");
-                    Gson gson = new Gson();
-                    String json = gson.toJson(dane);
-                    Document doc = Document.fromJson(json);
-                    addItemTask.execute(doc); }
-                Intent i = new Intent(DbActivity.this, MainWindowActivity.class);
-                startActivity(i);
-            }
-        });
-
         buttonGetItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,36 +60,84 @@ public class DbActivity extends AppCompatActivity {
         buttonPutItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddItemAsyncTask addItemTask = new AddItemAsyncTask();
+                sprawdz();
 
-                Woda woda = new Woda("4","10","2019-02-12");
-                textViewItem.setText("Adding contact: " + woda.getID());
-
-
-                Log.i(TAG, "Adding contact with telephone number: " + woda.getID());
-
-
-                /*convert contact to json string - not necessary though*/
-
-                /*You can convert between JSON and Document objects. However
-                , you will lose fidelity when converting from a Document object to JSON.
-                This is because not all data types that can be stored in DynamoDB can be represented in JSON.
-                Use Document.fromJson() and Document.toJson() to perform the conversion.*/
-                Gson gson = new Gson();
-                String json = gson.toJson(woda);
-
-                /*convert json string to document*/
-                Document doc = Document.fromJson(json);
-
-                /*add contact to table*/
-                addItemTask.execute(doc);
             }
         });
     }
+    private void sprawdz(){
 
+        CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
+        currentUser.getSessionInBackground(new AuthenticationHandler() {
+            @Override
+            public void onSuccess(CognitoUserSession userSession, CognitoDevice newDevice) {
+                if (userSession.isValid()) {
+                    String idToken = userSession.getIdToken().getJWTToken();
+                    if (idToken.length() > 0) {
+                        // Set up as a credentials provider.
+                        Log.i(TAG, "got id token - setting credentials using token");
+                        Map<String, String> logins = new HashMap<>();
+                        logins.put("cognito-idp.us-east-2.amazonaws.com/us-east-2_JbhhbQMsj", idToken);
+                        credentialsProvider.setLogins(logins);
+
+                        Log.i(TAG, "using credentials for the logged in user");
+
+                        /*refresh provider off main thread*/
+                        Log.i(TAG, "refreshing credentials provider in asynctask..");
+                        new DbActivity1.RefreshAsyncTask().execute();
+
+                    } else {
+                        Log.i(TAG, "no token...");
+                    }
+                } else {
+                    Log.i(TAG, "user session not valid - using identity pool credentials - guest user");
+                }
+
+                AddItemAsyncTask addItemTask = new AddItemAsyncTask();
+                Log.i(TAG, "getting random contact...");
+                Woda woda = new Woda("4","10","2019-02-12");
+                textViewItem.setText("Adding contact: " + woda.getID());
+                Log.i(TAG, "Adding contact with telephone number: " + woda.getID());
+                Gson gson = new Gson();
+                String json = gson.toJson(woda);
+                Document doc = Document.fromJson(json);
+                addItemTask.execute(doc);
+
+            }
+
+            @Override
+            public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String userId) {
+
+            }
+
+            @Override
+            public void getMFACode(MultiFactorAuthenticationContinuation continuation) {
+
+            }
+
+            @Override
+            public void authenticationChallenge(ChallengeContinuation continuation) {
+
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+
+            }
+        });
+    }
+    private class RefreshAsyncTask extends AsyncTask<Integer, Void, Integer> {
+
+        @Override
+        protected Integer doInBackground(Integer... integers) {
+            Log.i(TAG, "in asynctask doInBackground()");
+            credentialsProvider.refresh();
+            return integers[0];
+        }
+    }
     public void addDataToDB(String dataType, DBObject object, Context context) {
 
-        DbActivity.this.attachBaseContext(context);
+        DbActivity1.this.attachBaseContext(context);
 
         AddItemAsyncTask addItemTask = new AddItemAsyncTask();
         /*get a random contact (name and telephone only)*/
@@ -187,7 +175,7 @@ public class DbActivity extends AppCompatActivity {
             Document document = null;
 
             Log.i(TAG, "in GetItemAsyncTask doInBackground....");
-            DbAccess databaseAccess = DbAccess.getInstance(DbActivity.this);
+            DbAccess1 databaseAccess = DbAccess1.getInstance(DbActivity1.this,credentialsProvider);
             try {
                 Log.i(TAG, "getting contact for telephone: " + id[0]);
                 document = databaseAccess.getItem(id[0]);
@@ -239,7 +227,7 @@ public class DbActivity extends AppCompatActivity {
         protected Document doInBackground(Document... documents) {
             Document result = null;
             Log.i(TAG, "in AddItemAsyncTask doInBackground....");
-            DbAccess databaseAccess = DbAccess.getInstance(DbActivity.this);
+            DbAccess1 databaseAccess = DbAccess1.getInstance(DbActivity1.this,credentialsProvider);
             try {
                 result = databaseAccess.addContact(documents[0]);
             } catch (Exception e) {

@@ -46,6 +46,7 @@ public class GetUserDataActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_user_data);
+
         wyslij = (Button) findViewById(R.id.button_send);
         wzrost = (TextInputEditText) findViewById(R.id.textInputEdit1);
         waga = (TextInputEditText) findViewById(R.id.textInputEdit2);
@@ -55,7 +56,7 @@ public class GetUserDataActivity extends AppCompatActivity {
 
         final CognitoSettings cognitoSettings = new CognitoSettings(this);
         CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
-
+        credentialsProvider = cognitoSettings.getCredentialsProvider();
         username = currentUser.getUserId();
 
         wyslij.setOnClickListener(new View.OnClickListener() {
@@ -73,15 +74,17 @@ public class GetUserDataActivity extends AppCompatActivity {
                 if(valid) {
                     Log.i("hi","jest ok");
                     // Log.i("nowy wzrost : ", wzrost.getText().toString());
-
-                    DBUserData userdata = new DBUserData("10", username, waga.getText().toString(), wzrost.getText().toString(), wiek.getText().toString(),
+                    DBUserData userdata = new DBUserData("10", username.toString(), waga.getText().toString(), wzrost.getText().toString(), wiek.getText().toString(),
                             plec.getSelectedItem().toString(),aktywnosc.getSelectedItem().toString());
-                    DbActivity dba = new DbActivity();
+                    //DbActivity dba = new DbActivity();
                     Context context = GetUserDataActivity.this;
-                    dba.addDataToDB("User data", userdata, context);
-
-                    Intent validDataSent = new Intent(GetUserDataActivity.this, MainWindowActivity.class);
-                    GetUserDataActivity.this.startActivity(validDataSent);
+                    //context=GetUserDataActivity.this;
+                    //dba.addDataToDB("User data", userdata, context);
+                    Log.v("kurwaaaa",userdata.getID());
+                    Intent validDataSent = new Intent(GetUserDataActivity.this, DbActivity.class);
+                    validDataSent.putExtra("daneFormularza",userdata);
+                    validDataSent.putExtra("idZasrane",userdata.getID());
+                    startActivity(validDataSent);
                 }
                 else {
                     Toast.makeText(GetUserDataActivity.this, "wypełnij wszystkie pola", Toast.LENGTH_SHORT).show();
@@ -92,52 +95,6 @@ public class GetUserDataActivity extends AppCompatActivity {
 
     }
 
-    private void uploadWithTransferUtility() {
-
-        AmazonS3Client s3Client = new AmazonS3Client(credentialsProvider);
-
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
-        File file = new File(path, "advert.png");
-
-        // zamiast file chcemy wyslac to co uzytkownik wpisal
-        //S3Object stringObject = new S3Object("HelloWorld.txt", "Hello World!");
-        //s3Client.putObject(s3Client, stringObject);
-
-
-        TransferUtility transferUtility =
-                TransferUtility.builder()
-                        .context(getApplicationContext())
-                        .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
-                        .s3Client(s3Client)
-                        .build();
-
-        TransferObserver uploadObserver =
-                transferUtility.upload("advert.png", file);
-
-        uploadObserver.setTransferListener(new TransferListener() {
-            @Override
-            public void onStateChanged(int id, TransferState state) {
-                if (TransferState.COMPLETED == state) {
-                    // Handle a completed upload.
-                    Log.i(TAG, "Upload completed");
-                }
-            }
-
-            @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                float percentDonef = ((float) bytesCurrent / (float) bytesTotal) * 100;
-                int percentDone = (int) percentDonef;
-
-                Log.i("YourActivity", "ID:" + id + " bytesCurrent: " + bytesCurrent
-                        + " bytesTotal: " + bytesTotal + " " + percentDone + "%");
-            }
-
-            @Override
-            public void onError(int id, Exception ex) {
-                Log.i(TAG, "upload error: " + ex.getLocalizedMessage());
-            }
-        });
-    }
 
     @Override
     protected void onDestroy() {

@@ -3,19 +3,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
-import com.amazonaws.mobileconnectors.dynamodbv2.document.DeleteItemOperationConfig;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.PutItemOperationConfig;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.ScanOperationConfig;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.Search;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.Table;
-import com.amazonaws.mobileconnectors.dynamodbv2.document.UpdateItemOperationConfig;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.DynamoDBEntry;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.DynamoDBList;
@@ -24,90 +16,44 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.ReturnValue;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-public class DbAccess {
+public class DbAccess1 {
     private final String COGNITO_IDENTITY_POOL_ID = "us-east-2:b5e78aad-7888-42f7-b940-e8830b83eb9a";
 
     private final Regions COGNITO_IDENTITY_POOL_REGION =  Regions.US_EAST_2;
     private final String DYNAMODB_TABLE = "ddb-cloud2app";
     private Context context;
-    private CognitoCachingCredentialsProvider credentialsProvider;
+    //private CognitoCachingCredentialsProvider credentialsProvider;
     private AmazonDynamoDBClient dbClient;
     private Table dbTable;
-    private static volatile DbAccess instance;
+    private static volatile DbAccess1 instance;
     private String TAG = "TomekJestSuper";
 
-    private DbAccess(Context context) {
+    private DbAccess1(Context context, CognitoCachingCredentialsProvider credentialsProvider) {
         this.context = context;
         final CognitoSettings cognitoSettings = new CognitoSettings(this.context);
 
         //credentialsProvider = new CognitoCachingCredentialsProvider(context, "us-east-2:59abf0c1-9231-45f4-bb7f-714113f76dc7", COGNITO_IDENTITY_POOL_REGION);
-        credentialsProvider = cognitoSettings.getCredentialsProvider();
+        //credentialsProvider = cognitoSettings.getCredentialsProvider();
+
         CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
-        currentUser.getSessionInBackground(new AuthenticationHandler() {
-            @Override
-            public void onSuccess(CognitoUserSession userSession, CognitoDevice newDevice) {
 
-                if (userSession.isValid()) {
-                    String idToken = userSession.getIdToken().getJWTToken();
-                    if (idToken.length() > 0) {
-                        Map<String, String> logins = new HashMap<>();
-                        logins.put("cognito-idp.us-east-2.amazonaws.com/us-east-2_JbhhbQMsj", idToken);
-                        credentialsProvider.setLogins(logins);
+        Log.v("userid:",currentUser.getUserId()+"");
 
-                    } else {
-                        Log.i(TAG, "no token...");
-                    }
-                } else {
-                    Log.i(TAG, "user session not valid - using identity pool credentials - guest user");
-                }
+        dbClient = new AmazonDynamoDBClient(credentialsProvider.getCredentials());
 
-                //Log.v("userid:",currentUser.getUserId()+"");
-                dbClient = new AmazonDynamoDBClient(credentialsProvider);
-                dbClient.setRegion(Region.getRegion(Regions.US_EAST_2));
-                dbTable = Table.loadTable(dbClient, DYNAMODB_TABLE);
-
-            }
-
-            @Override
-            public void getAuthenticationDetails(AuthenticationContinuation authenticationContinuation, String userId) {
-
-            }
-
-            @Override
-            public void getMFACode(MultiFactorAuthenticationContinuation continuation) {
-
-            }
-
-            @Override
-            public void authenticationChallenge(ChallengeContinuation continuation) {
-
-            }
-
-            @Override
-            public void onFailure(Exception exception) {
-
-            }
-        });
+        dbClient.setRegion(Region.getRegion(Regions.US_EAST_2));
+        dbTable = Table.loadTable(dbClient, DYNAMODB_TABLE);
 
 
     }
-    public static synchronized DbAccess getInstance(Context context) {
+    public static synchronized DbAccess1 getInstance(Context context, CognitoCachingCredentialsProvider credentialsProvider) {
         if (instance == null) {
-            Log.i("Kasia tez", "tworzenie nowej instancji bazy ? ");
-            instance = new DbAccess(context);
+             Log.i("Kasia tez", "tworzenie nowej instancji bazy ? ");
+             instance = new DbAccess1(context, credentialsProvider);
         }
         return instance;
     }
@@ -168,4 +114,5 @@ public class DbAccess {
 
         return result;
     }
+
 }

@@ -1,6 +1,8 @@
 package za.co.a101apps.cognitologinapp;
 
-public class Woda extends DBObject {
+import java.io.Serializable;
+
+public class Woda extends DBObject implements Serializable {
 
 
     String number;

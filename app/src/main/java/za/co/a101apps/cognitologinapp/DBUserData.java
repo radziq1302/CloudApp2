@@ -1,6 +1,8 @@
 package za.co.a101apps.cognitologinapp;
 
-public class DBUserData extends DBObject {
+import java.io.Serializable;
+
+public class DBUserData extends DBObject implements Serializable {
 
     String username;
     String waga;
@@ -11,7 +13,7 @@ public class DBUserData extends DBObject {
 
     public DBUserData(String id, String username, String waga, String wzrost, String wiek, String plec, String aktywnosc) {
         super();
-        this.ID = id;
+        this.ID=id;
         this.username = username;
         this.waga = waga;
         this.wzrost = wzrost;

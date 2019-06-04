@@ -51,9 +51,9 @@ public class MainWindowActivity extends AppCompatActivity implements View.OnClic
             case R.id.buttonNew:
                 Log.i("Tutaj", "Adding new object to database:  ?????? ");
                 DBUserData userdata = new DBUserData("7", "Kasia", "123", "123", "123", "K", "N");
-                DbActivity dba = new DbActivity();
+                //DbActivity dba = new DbActivity();
                 Context context = MainWindowActivity.this;
-                dba.addDataToDB("User data", userdata, context);
+                //dba.addDataToDB("User data", userdata, context);
                 Log.i("Tutaj", "Dodano  ?????? ");
         }
     }

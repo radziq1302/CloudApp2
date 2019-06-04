@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 CognitoSettings cognitoSettings = new CognitoSettings(LoginActivity.this);
-
+                cognitoSettings.getUserPool().getCurrentUser().signOut();
                 CognitoUser thisUser = cognitoSettings.getUserPool()
                         .getUser(String.valueOf(editTextUsername.getText()));
 // Sign in the user
