@@ -19,7 +19,7 @@ public class loadingActivity extends Activity {
                     sleep(3000);
                     //jeżeli już ktoś zalogowany to do MainActivity a jesli nie to do log_in, może zmienna boolean po zapamiętaniu logowania Tickbox
                     //Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                    Intent intent = new Intent(getApplicationContext(),GetUserDataActivity.class);
+                    Intent intent = new Intent(getApplicationContext(),Menu.class);
                     startActivity(intent);
                     finish();
                 } catch (InterruptedException e) {
