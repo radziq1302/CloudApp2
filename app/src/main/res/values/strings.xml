@@ -18,4 +18,5 @@
         <item>Wysoka (5 razy w tygodniu)</item>
     </string-array>
     <string name="title_activity_main_window">MainWindowActivity</string>
+    <string name="welcome">Siemka</string>
 </resources>
