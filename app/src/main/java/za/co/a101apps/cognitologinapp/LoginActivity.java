@@ -2,6 +2,7 @@ package za.co.a101apps.cognitologinapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -100,13 +101,29 @@ public class LoginActivity extends AppCompatActivity {
 
                 thisUser.getSessionInBackground(authenticationHandler);
 
-                if (flag==true){
-                    Intent i = new Intent(LoginActivity.this, GetUserDataActivity.class);
-                    LoginActivity.this.startActivity(i);
-                }
-                else {
-                    Toast.makeText(LoginActivity.this, "błędne dane", Toast.LENGTH_SHORT).show();
-                }
+                int time=3000; // in milliseconds
+
+                Handler h=new Handler();
+
+                h.postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        //here you can do the job
+
+                        if (flag==true){
+                            Intent i = new Intent(LoginActivity.this, MainScreenActivity.class);
+                            LoginActivity.this.startActivity(i);
+                        }
+                        else {
+                            Toast.makeText(LoginActivity.this, "błędne dane", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+
+                },time);
+
             }
         });
     }
