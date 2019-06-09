@@ -1,24 +1,24 @@
 package za.co.a101apps.cognitologinapp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import za.co.a101apps.cognitologinapp.R;
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 
 public class MainScreenActivity extends AppCompatActivity {
 
@@ -26,17 +26,30 @@ public class MainScreenActivity extends AppCompatActivity {
     private ImageView imageView;
     private Button pomiar;
     private Button wykresy;
-    private Button dieta;
+    private Button porada;
     private Button galeria;
-    private ProgressBar kroki;
-    private ProgressBar woda;
+    private ProgressBar progres_kroki;
+    private ProgressBar progres_woda;
     private TextView nazwa_uzytkownika;
-    private TextView max_woda;
-    private TextView max_kroki;
+    private TextView aktualna_woda;
+    private TextView aktualne_kroki;
     private TextView wartosc_waga;
     private TextView wartosc_sen;
 
+    private FloatingActionButton fab; // floating button glowny
+    private FrameLayout fab1; // kazdy pomniejszy sklada sie z frameLayout + text view, ktory musialam schowac zanim sie otworzy
+    private FrameLayout fab2; // dlatego jest tyle tych zmiennych
+    private FrameLayout fab3;
+    private TextView fab1_2;
+    private TextView fab2_2;
+    private TextView fab3_2;
+
+
     private boolean nie_istnieje = false;
+    private boolean isFABOpen = false;
+
+    private int wyliczone_max_woda = 2500;
+    private int wyliczone_max_kroki = 10000;
 
 
     @Override
@@ -45,17 +58,64 @@ public class MainScreenActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_screen);
 
         imageView = (ImageView) findViewById(android.R.id.icon);
-        pomiar = (Button) findViewById(R.id.measure_button);
         wykresy = (Button) findViewById(R.id.plot_button);
-        dieta = (Button) findViewById(R.id.diet_button);
+        porada = (Button) findViewById(R.id.diet_tip_button);
         galeria = (Button) findViewById(R.id.gallery_button);
-        kroki = (ProgressBar) findViewById(R.id.steps_progress);
-        woda = (ProgressBar) findViewById(R.id.water_progress);
+        progres_kroki = (ProgressBar) findViewById(R.id.steps_progress);
+        progres_woda = (ProgressBar) findViewById(R.id.water_progress);
         nazwa_uzytkownika = (TextView) findViewById(R.id.username);
-        max_woda = (TextView) findViewById(R.id.water_max_value);
-        max_kroki = (TextView) findViewById(R.id.steps_max_value);
+        aktualna_woda = (TextView) findViewById(R.id.water_current_value);
+        aktualne_kroki = (TextView) findViewById(R.id.steps_current_value);
         wartosc_waga = (TextView) findViewById(R.id.weight_value);
         wartosc_sen = (TextView) findViewById(R.id.sleep_value);
+
+        fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        fab1 = (FrameLayout) findViewById(R.id.fab1);
+        fab2 = (FrameLayout) findViewById(R.id.fab2);
+        fab3 = (FrameLayout) findViewById(R.id.fab3);
+        fab1_2 = (TextView) findViewById(R.id.fab1_2);
+        fab2_2 = (TextView) findViewById(R.id.fab2_2);
+        fab3_2 = (TextView) findViewById(R.id.fab3_2);
+
+        final CognitoSettings cognitoSettings = new CognitoSettings(this);
+        CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
+
+        nazwa_uzytkownika.setText(currentUser.getUserId());
+
+        progres_woda.setMax(wyliczone_max_woda);
+        progres_kroki.setMax(wyliczone_max_kroki);
+
+        aktualna_woda.setText(Integer.toString(progres_woda.getProgress()) + " / " + Integer.toString(wyliczone_max_woda));
+        aktualne_kroki.setText(Integer.toString(progres_kroki.getProgress()) + " / " + Integer.toString(wyliczone_max_kroki));
+
+
+        // floating action button
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!isFABOpen){
+                    showFABMenu();
+                }else{
+                    closeFABMenu();
+                }
+            }
+        });
+
+
+        progres_kroki.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                progres_kroki.setProgress(progres_kroki.getProgress()+500);
+                aktualne_kroki.setText(Integer.toString(progres_kroki.getProgress()) + " / " + Integer.toString(wyliczone_max_kroki));
+            }
+        });
+
+
+        progres_woda.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                progres_woda.setProgress(progres_woda.getProgress()+250);
+                aktualna_woda.setText(Integer.toString(progres_woda.getProgress()) + " / " + Integer.toString(wyliczone_max_woda));
+            }
+        });
 
 
         if(nie_istnieje) {
@@ -69,19 +129,18 @@ public class MainScreenActivity extends AppCompatActivity {
                 }
             });
 
-
         } else {
 
-            // Bitmap bitmap;
-
-           // Drawable d = new BitmapDrawable(getResources(), );
-
             Drawable drawable = this.getResources().getDrawable(R.drawable.rys_2);
-
             imageView.setImageDrawable(drawable);
-
-
         }
+
+
+        porada.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Toast.makeText(MainScreenActivity.this, "Kup wersję Premium!", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -119,5 +178,27 @@ public class MainScreenActivity extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
     }
+
+
+    private void showFABMenu(){
+        isFABOpen=true;
+        fab1_2.setVisibility(View.VISIBLE);
+        fab2_2.setVisibility(View.VISIBLE);
+        fab3_2.setVisibility(View.VISIBLE);
+        fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
+        fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
+        fab3.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
+    }
+
+    private void closeFABMenu(){
+        isFABOpen=false;
+        fab1_2.setVisibility(View.VISIBLE);
+        fab2_2.setVisibility(View.VISIBLE);
+        fab3_2.setVisibility(View.VISIBLE);
+        fab1.animate().translationY(0);
+        fab2.animate().translationY(0);
+        fab3.animate().translationY(0);
+    }
+
 
 }
