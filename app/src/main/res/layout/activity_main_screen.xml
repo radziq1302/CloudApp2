@@ -201,37 +201,6 @@
         app:layout_constraintVertical_bias="0.514" />
 
 
-    <FrameLayout
-        android:id="@+id/fab3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.915"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.951">
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab3_1"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="5dp"
-            />
-
-        <TextView
-            android:id="@+id/fab3_2"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:text="Waga"
-            android:elevation="16dp"
-            android:textColor="@android:color/holo_green_dark"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/fab2"
@@ -259,7 +228,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:text="Woda"
+            android:text="Waga"
             android:elevation="16dp"
             android:textColor="@android:color/holo_green_dark"
             android:textAppearance="?android:attr/textAppearanceMedium" />

@@ -39,10 +39,8 @@ public class MainScreenActivity extends AppCompatActivity {
     private FloatingActionButton fab; // floating button glowny
     private FrameLayout fab1; // kazdy pomniejszy sklada sie z frameLayout + text view, ktory musialam schowac zanim sie otworzy
     private FrameLayout fab2; // dlatego jest tyle tych zmiennych
-    private FrameLayout fab3;
     private TextView fab1_2;
     private TextView fab2_2;
-    private TextView fab3_2;
 
 
     private boolean nie_istnieje = false;
@@ -72,15 +70,16 @@ public class MainScreenActivity extends AppCompatActivity {
         fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         fab1 = (FrameLayout) findViewById(R.id.fab1);
         fab2 = (FrameLayout) findViewById(R.id.fab2);
-        fab3 = (FrameLayout) findViewById(R.id.fab3);
         fab1_2 = (TextView) findViewById(R.id.fab1_2);
         fab2_2 = (TextView) findViewById(R.id.fab2_2);
-        fab3_2 = (TextView) findViewById(R.id.fab3_2);
+
 
         final CognitoSettings cognitoSettings = new CognitoSettings(this);
         CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
 
         nazwa_uzytkownika.setText(currentUser.getUserId());
+
+        // ustawienie poczatkowych wartosci progressu - na razie zawsze od 0
 
         progres_woda.setMax(wyliczone_max_woda);
         progres_kroki.setMax(wyliczone_max_kroki);
@@ -89,7 +88,7 @@ public class MainScreenActivity extends AppCompatActivity {
         aktualne_kroki.setText(Integer.toString(progres_kroki.getProgress()) + " / " + Integer.toString(wyliczone_max_kroki));
 
 
-        // floating action button
+        // floating action button pokazywanie i chowanie
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,6 +100,33 @@ public class MainScreenActivity extends AppCompatActivity {
             }
         });
 
+
+        // to sie dzieje kiedy klikniemy w ktorys z tych wyjezdzajacych floating buttonow
+
+        fab1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent getMeasures = new Intent(MainScreenActivity.this, InputMeasuresActivity.class);
+                getMeasures.putExtra("type","WAGA");
+                startActivity(getMeasures);
+
+            }
+        });
+
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent getMeasures = new Intent(MainScreenActivity.this, InputMeasuresActivity.class);
+                getMeasures.putExtra("type","SEN");
+                startActivity(getMeasures);
+
+            }
+        });
+
+
+        // reaktywnosc paskow progresu - w sumie gotowe tylko ze te dane sie nigdzie nie zapisuja
 
         progres_kroki.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -117,6 +143,8 @@ public class MainScreenActivity extends AppCompatActivity {
             }
         });
 
+        // foteczka
+        // nie_istnieje jest na sztywno wpisane i nic nie sprawdza czy uzytkownik juz ma zdjecie czy nie
 
         if(nie_istnieje) {
 
@@ -135,6 +163,7 @@ public class MainScreenActivity extends AppCompatActivity {
             imageView.setImageDrawable(drawable);
         }
 
+        // nasze ulubione - skonczone xd
 
         porada.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -184,20 +213,17 @@ public class MainScreenActivity extends AppCompatActivity {
         isFABOpen=true;
         fab1_2.setVisibility(View.VISIBLE);
         fab2_2.setVisibility(View.VISIBLE);
-        fab3_2.setVisibility(View.VISIBLE);
         fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
         fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
-        fab3.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
+
     }
 
     private void closeFABMenu(){
         isFABOpen=false;
         fab1_2.setVisibility(View.VISIBLE);
         fab2_2.setVisibility(View.VISIBLE);
-        fab3_2.setVisibility(View.VISIBLE);
         fab1.animate().translationY(0);
         fab2.animate().translationY(0);
-        fab3.animate().translationY(0);
     }
 
 
