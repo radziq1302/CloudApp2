@@ -230,6 +230,7 @@
             android:layout_gravity="left"
             android:text="Waga"
             android:elevation="16dp"
+            android:inputType="number"
             android:textColor="@android:color/holo_green_dark"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </FrameLayout>
@@ -263,6 +264,7 @@
             android:layout_gravity="clip_vertical"
             android:text="Sen"
             android:elevation="16dp"
+            android:inputType="number"
             android:textColor="@android:color/holo_green_dark"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </FrameLayout>

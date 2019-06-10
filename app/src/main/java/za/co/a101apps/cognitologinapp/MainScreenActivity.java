@@ -4,12 +4,16 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -19,6 +23,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
+import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainScreenActivity extends AppCompatActivity {
 
@@ -73,12 +83,16 @@ public class MainScreenActivity extends AppCompatActivity {
         fab1_2 = (TextView) findViewById(R.id.fab1_2);
         fab2_2 = (TextView) findViewById(R.id.fab2_2);
 
-
         final CognitoSettings cognitoSettings = new CognitoSettings(this);
-        CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
-
+        final CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         nazwa_uzytkownika.setText(currentUser.getUserId());
-
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        final String currentDateandTime = sdf.format(new Date());
+        MainScreenActivity.GetItemAsyncTask getItemTask = new MainScreenActivity.GetItemAsyncTask();
+        String ID = currentDateandTime+"-"+currentUser.getUserId();
+        getItemTask.execute(ID);
         // ustawienie poczatkowych wartosci progressu - na razie zawsze od 0
 
         progres_woda.setMax(wyliczone_max_woda);
@@ -106,9 +120,11 @@ public class MainScreenActivity extends AppCompatActivity {
         fab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Log.v("kupa",currentUser.getUserId()+"");
                 Intent getMeasures = new Intent(MainScreenActivity.this, InputMeasuresActivity.class);
                 getMeasures.putExtra("type","WAGA");
+                getMeasures.putExtra("idZasrane",currentUser.getUserId());
+
                 startActivity(getMeasures);
 
             }
@@ -117,9 +133,10 @@ public class MainScreenActivity extends AppCompatActivity {
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Log.v("kupaSen",currentUser.getUserId()+"");
                 Intent getMeasures = new Intent(MainScreenActivity.this, InputMeasuresActivity.class);
                 getMeasures.putExtra("type","SEN");
+                getMeasures.putExtra("idZasrane",currentUser.getUserId());
                 startActivity(getMeasures);
 
             }
@@ -226,5 +243,59 @@ public class MainScreenActivity extends AppCompatActivity {
         fab2.animate().translationY(0);
     }
 
+    private class GetItemAsyncTask extends AsyncTask<String, Void, Document> {
+        @Override
+        protected Document doInBackground(String... id) {
 
+            Document document = null;
+
+            Log.i("juzNieMoge", "in GetItemAsyncTask doInBackground....");
+            DbAccess databaseAccess = DbAccess.getInstance(MainScreenActivity.this);
+            try {
+                Log.i("juzNieMoge", "getting data: " + id[0]);
+                document = databaseAccess.getItem(id[0]);
+            }
+            catch (Exception e) {
+                Log.i("juzNieMoge", "error getting data: " + e.getMessage());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        /*update text views on main thread*/
+                        wartosc_waga.setText("Error getting data");
+                        wartosc_waga.setBackgroundColor(Color.RED);
+                    }
+                });
+            }
+            return document;
+        }
+
+        @Override
+        protected void onPostExecute(Document document) {
+            super.onPostExecute(document);
+            //load text view
+
+            if (document != null) {
+                String number = String.valueOf(document.get("waga").asString());
+//waga tutaj
+                try {
+                    String jsonDocument = Document.toJson(document);
+                    Log.i("juzNieMoge", "Contact: " + jsonDocument);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.i("juzNieMoge", "error in GetItemAsyncTask show contact as json: " + e.getLocalizedMessage());
+                }
+
+                if (number != null) {
+                    wartosc_waga.setText(number + " kg");
+
+                } else {
+                    wartosc_waga.setText("data not found");
+                    wartosc_waga.setBackgroundColor(Color.YELLOW);
+                }
+            } else {
+                wartosc_waga.setText("data not found");
+                wartosc_waga.setBackgroundColor(Color.YELLOW);
+            }
+        }
+    }
 }

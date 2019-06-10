@@ -106,12 +106,12 @@ public class DbActivity extends AppCompatActivity {
             public void onClick(View v) {
                 GetItemAsyncTask getItemTask = new GetItemAsyncTask();
                 /*get a random telephone */
-                String telephoneNumber = "ID1";
-                textViewItem.setText("Busy getting contact: " + telephoneNumber);
+                String ID = "1";
+                textViewItem.setText("Busy getting contact: " + ID);
 
 
-                Log.i(TAG, "Getting contact for telephone number: " + telephoneNumber);
-                getItemTask.execute(telephoneNumber);
+                Log.i(TAG, "Getting contact for telephone number: " + ID);
+                getItemTask.execute(ID);
             }
         });
 
@@ -129,12 +129,6 @@ public class DbActivity extends AppCompatActivity {
                 Log.i(TAG, "Adding contact with telephone number: " + woda.getID());
 
 
-                /*convert contact to json string - not necessary though*/
-
-                /*You can convert between JSON and Document objects. However
-                , you will lose fidelity when converting from a Document object to JSON.
-                This is because not all data types that can be stored in DynamoDB can be represented in JSON.
-                Use Document.fromJson() and Document.toJson() to perform the conversion.*/
                 Gson gson = new Gson();
                 String json = gson.toJson(woda);
 

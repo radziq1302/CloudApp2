@@ -59,6 +59,7 @@ public class GetUserDataActivity extends AppCompatActivity {
         credentialsProvider = cognitoSettings.getCredentialsProvider();
         username = currentUser.getUserId();
 
+
         wyslij.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -32,7 +32,8 @@
             android:layout_alignLeft="@+id/first"
             android:layout_alignParentLeft="true"
             android:padding="30px"
-            android:text="Wzrost" />
+            android:text="Wzrost"
+            android:inputType="number"/>
 
 
         <android.support.design.widget.TextInputLayout
@@ -44,7 +45,8 @@
                 android:id="@+id/textInputEdit1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="wpisz wzrost w cm" />
+                android:hint="wpisz wzrost w cm"
+                android:inputType="number"/>
         </android.support.design.widget.TextInputLayout>
 
 
@@ -68,7 +70,8 @@
             android:layout_alignLeft="@+id/second"
             android:layout_alignParentLeft="true"
             android:padding="30px"
-            android:text="Waga" />
+            android:text="Waga"
+            android:inputType="number"/>
 
 
         <android.support.design.widget.TextInputLayout
@@ -80,7 +83,8 @@
                 android:id="@+id/textInputEdit2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="wpisz wagę w kg" />
+                android:hint="wpisz wagę w kg"
+                android:inputType="number"/>
         </android.support.design.widget.TextInputLayout>
 
 
@@ -104,7 +108,8 @@
             android:layout_alignLeft="@+id/third"
             android:layout_alignParentLeft="true"
             android:padding="30px"
-            android:text="Wiek" />
+            android:text="Wiek"
+            android:inputType="number"/>
 
 
         <android.support.design.widget.TextInputLayout
@@ -116,7 +121,8 @@
                 android:id="@+id/textInputEdit3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="wpisz wiek" />
+                android:hint="wpisz wiek"
+                android:inputType="number"/>
         </android.support.design.widget.TextInputLayout>
 
 

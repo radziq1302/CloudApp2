@@ -1,5 +1,6 @@
 package za.co.a101apps.cognitologinapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -78,6 +79,8 @@ public class LogoutActivity extends AppCompatActivity {
             }
         };
 
-//        currentUser.globalSignOutInBackground(callbackGlobalSignOut);
+        currentUser.globalSignOutInBackground(callbackGlobalSignOut);
+        Intent i = new Intent(this, Menu.class);
+        startActivity(i);
     }
 }
