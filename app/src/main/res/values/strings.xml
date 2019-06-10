@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Cognito log in app</string>
+    <string name="app_name">CloudFit</string>
     <string name="title_activity_display">RegisterActivity</string>
     <string name="title_activity_get_user_data">GetUserDataActivity</string>
     <string name="genders">Płeć</string>
