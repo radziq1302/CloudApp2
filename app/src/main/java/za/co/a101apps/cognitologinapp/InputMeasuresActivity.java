@@ -27,6 +27,10 @@ public class InputMeasuresActivity extends AppCompatActivity {
     private String type;
     private Intent come_back;
     private String TAG = "InputMeasures";
+    private String kroki;
+    private String woda;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +40,8 @@ public class InputMeasuresActivity extends AppCompatActivity {
         Log.v("data691", currentDateandTime+"");
         // zmienna type mowi czy to jest waga czy sen
         type = getIntent().getStringExtra("type");
+        kroki = getIntent().getStringExtra("kroki");
+        woda = getIntent().getStringExtra("woda");
 
         wprowadzona_wartosc = (EditText) findViewById(R.id.input_value);
         wyslij = (Button) findViewById(R.id.button_send);
@@ -65,30 +71,46 @@ public class InputMeasuresActivity extends AppCompatActivity {
                     Log.i("warunek",wprowadzona_wartosc.getText().toString());
                 } else {
                     valid = true;
-                    final String nazwa_uz = (String) getIntent().getStringExtra("idZasrane");
-                    Log.v("data6969", nazwa_uz+"");
-                    String id=currentDateandTime+"-"+nazwa_uz.toString();
-                    DBUserData userdata = new DBUserData(id, wprowadzona_wartosc.getText().toString());
-                    InputMeasuresActivity.AddItemAsyncTask addItemTask;
-                    if (userdata != null) {
-                        Log.v("cojest",userdata.getID()+userdata.getWaga()+"");
-                        addItemTask = new InputMeasuresActivity.AddItemAsyncTask();
-                        Log.i(TAG, "getting random contact...");
-                        Gson gson = new Gson();
-                        String json = gson.toJson(userdata);
-                        Document doc = Document.fromJson(json);
-                        addItemTask.execute(doc); }
-                    Log.i("warunek",wprowadzona_wartosc.getText().toString());
+
                 }
+
+
 
                 if(valid) {
                     switch (type) {
                         case "WAGA":
                             Log.i("dostalismy wartosc: ","waga");
+
+
+                            final String nazwa_uz = (String) getIntent().getStringExtra("idZasrane");
+                            Log.v("data6969", nazwa_uz+"");
+                            String id=currentDateandTime+"-"+nazwa_uz.toString();
+
+                            Log.v("data6969", kroki);
+                            Log.v("data6969", woda);
+
+                            DBUserData userdata = new DBUserData(id, wprowadzona_wartosc.getText().toString(), kroki, woda);
+                            InputMeasuresActivity.AddItemAsyncTask addItemTask;
+                            if (userdata != null) {
+                                Log.v("cojest",userdata.getID()+userdata.getWaga()+"");
+                                addItemTask = new InputMeasuresActivity.AddItemAsyncTask();
+                                Log.i(TAG, "getting random contact...");
+                                Gson gson = new Gson();
+                                String json = gson.toJson(userdata);
+                                Document doc = Document.fromJson(json);
+                                addItemTask.execute(doc); }
+                            Log.i("warunek",wprowadzona_wartosc.getText().toString());
+
+
                             startActivity(come_back);
                             break;
+
+
                         case "SEN":
                             Log.i("dostalismy wartosc: ","sen");
+
+                            come_back.putExtra("sen",wprowadzona_wartosc.getText().toString());
+
                             startActivity(come_back);
                             break;
                     }

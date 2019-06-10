@@ -10,6 +10,9 @@ public class DBUserData extends DBObject implements Serializable {
     String wiek;
     String plec;
     String aktywnosc;
+    String kroki;
+    String woda;
+    String sen;
 
     public DBUserData(String id, String username, String waga, String wzrost, String wiek, String plec, String aktywnosc) {
         super();
@@ -21,10 +24,13 @@ public class DBUserData extends DBObject implements Serializable {
         this.plec = plec;
         this.aktywnosc = aktywnosc;
     }
-    public DBUserData(String id, String waga) {
+
+    public DBUserData(String id, String waga, String kroki, String woda) {
         super();
         this.ID=id;
         this.waga = waga;
+        this.kroki = kroki;
+        this.woda = woda;
 
     }
 

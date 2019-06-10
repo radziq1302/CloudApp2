@@ -1,6 +1,5 @@
 package za.co.a101apps.cognitologinapp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -15,9 +14,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -25,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
 
 public class MainScreenActivity extends AppCompatActivity {
 
@@ -63,6 +64,8 @@ public class MainScreenActivity extends AppCompatActivity {
     private int wyliczone_max_woda = 2500;
     private int wyliczone_max_kroki = 10000;
 
+    private String wprowadzony_sen;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,6 +90,8 @@ public class MainScreenActivity extends AppCompatActivity {
         fab1_2 = (TextView) findViewById(R.id.fab1_2);
         fab2_2 = (TextView) findViewById(R.id.fab2_2);
 
+
+
         final CognitoSettings cognitoSettings = new CognitoSettings(this);
         final CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -105,6 +110,13 @@ public class MainScreenActivity extends AppCompatActivity {
         aktualna_woda.setText(Integer.toString(progres_woda.getProgress()) + " / " + Integer.toString(wyliczone_max_woda));
         aktualne_kroki.setText(Integer.toString(progres_kroki.getProgress()) + " / " + Integer.toString(wyliczone_max_kroki));
 
+
+        wprowadzony_sen = getIntent().getStringExtra("sen");
+
+        if(wprowadzony_sen != null) {
+
+            wartosc_sen.setText(wprowadzony_sen + " h");
+        }
 
         // floating action button pokazywanie i chowanie
         fab.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +140,9 @@ public class MainScreenActivity extends AppCompatActivity {
                 Intent getMeasures = new Intent(MainScreenActivity.this, InputMeasuresActivity.class);
                 getMeasures.putExtra("type","WAGA");
                 getMeasures.putExtra("idZasrane",currentUser.getUserId());
+                getMeasures.putExtra("woda",Integer.toString(progres_woda.getProgress()));
+                getMeasures.putExtra("kroki",Integer.toString(progres_kroki.getProgress()));
+                getMeasures.putExtra("idZasrane",currentUser.getUserId());
 
                 startActivity(getMeasures);
 
@@ -140,7 +155,6 @@ public class MainScreenActivity extends AppCompatActivity {
                 Log.v("kupaSen",currentUser.getUserId()+"");
                 Intent getMeasures = new Intent(MainScreenActivity.this, InputMeasuresActivity.class);
                 getMeasures.putExtra("type","SEN");
-                getMeasures.putExtra("idZasrane",currentUser.getUserId());
                 startActivity(getMeasures);
 
             }
@@ -192,7 +206,29 @@ public class MainScreenActivity extends AppCompatActivity {
             }
         });
 
+
+        wykresy.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent wykresyOkienko = new Intent(MainScreenActivity.this, StatsActivity.class);
+                wykresyOkienko.putExtra("idZasrane",currentUser.getUserId());
+                startActivity(wykresyOkienko);
+            }
+        });
+
+
+        galeria.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent galeriaOkienko = new Intent(MainScreenActivity.this, ShowMeActivity1.class);
+                galeriaOkienko.putExtra("idZasrane",currentUser.getUserId());
+                startActivity(galeriaOkienko);
+            }
+        });
+
+
     }
+
+
+
 
 
     @Override
@@ -279,7 +315,10 @@ public class MainScreenActivity extends AppCompatActivity {
             //load text view
 
             if (document != null) {
-                String number = String.valueOf(document.get("waga").asString());
+                String waga_z_bazy = String.valueOf(document.get("waga").asString());
+                String kroki_z_bazy = String.valueOf(document.get("kroki").asString());
+                String woda_z_bazy = String.valueOf(document.get("woda").asString());
+
 //waga tutaj
                 try {
                     String jsonDocument = Document.toJson(document);
@@ -289,8 +328,15 @@ public class MainScreenActivity extends AppCompatActivity {
                     Log.i("juzNieMoge", "error in GetItemAsyncTask show contact as json: " + e.getLocalizedMessage());
                 }
 
-                if (number != null) {
-                    wartosc_waga.setText(number + " kg");
+                if (waga_z_bazy != null && woda_z_bazy != null && kroki_z_bazy != null ) {
+                    wartosc_waga.setText(waga_z_bazy + " kg");
+
+                    progres_woda.setProgress(Integer.parseInt(woda_z_bazy));
+                    aktualna_woda.setText(woda_z_bazy + " / " + Integer.toString(wyliczone_max_woda));
+
+                    progres_kroki.setProgress(Integer.parseInt(kroki_z_bazy));
+                    aktualne_kroki.setText(kroki_z_bazy + " / " + Integer.toString(wyliczone_max_woda));
+
 
                 } else {
                     wartosc_waga.setText("data not found");
@@ -301,9 +347,9 @@ public class MainScreenActivity extends AppCompatActivity {
                 wartosc_waga.setBackgroundColor(Color.YELLOW);
             }
         }
-
     }
-    @Override
+
+ @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
@@ -322,4 +368,6 @@ public class MainScreenActivity extends AppCompatActivity {
 
         return true;
     }
+
+
 }
