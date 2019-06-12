@@ -32,12 +32,12 @@ import lecho.lib.hellocharts.view.LineChartView;
 public class StatsActivity extends AppCompatActivity {
 
     private ArrayList<DBUserData> statystyki = new ArrayList<>();
-    private String[] daysArray;
-    private int[] stepsArray;
-    private int[] weightArray;
-    private int[] sleepArray;
-    private int[] waterArray;
-    private String chosen_plot;
+    private ArrayList<String> daysArray = new ArrayList<>();
+    private ArrayList<Integer> stepsArray = new ArrayList<>();
+    private ArrayList<Integer> weightArray = new ArrayList<>();
+    private ArrayList<Integer> sleepArray = new ArrayList<>();
+    private ArrayList<Integer> waterArray = new ArrayList<>();
+
     private Spinner spinner;
 
 
@@ -62,10 +62,13 @@ public class StatsActivity extends AppCompatActivity {
             Calendar end = Calendar.getInstance();
             end.setTime(endDate);
 
+
             while( !start.after(end)){
                 Date targetDay = start.getTime();
 
                 String dateString = sdf.format(targetDay.getTime());
+
+                daysArray.add(dateString);
 
                 Log.i("KOLEJNA DATA: ", dateString);
                 Log.i("-", "-");
@@ -86,7 +89,7 @@ public class StatsActivity extends AppCompatActivity {
 
         spinner = (Spinner) findViewById(R.id.wybor_wykresu);
 
-        chosen_plot = spinner.getSelectedItem().toString();
+        // chosen_plot = spinner.getSelectedItem().toString();
 
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -97,26 +100,38 @@ public class StatsActivity extends AppCompatActivity {
 
                 if(selectedItem.equals("Waga"))
                 {
-                    String[] axisData = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept",
-                            "Oct", "Nov", "Dec"};
+                    String[] axisData = new String[daysArray.size()];
+                    axisData = daysArray.toArray(axisData);
 
-                    int[] yAxisData = {50, 20, 15, 30, 20, 60, 15, 40, 45, 10, 90, 18};
+                    Integer[] yAxisData = new Integer[weightArray.size()];
+                    yAxisData = weightArray.toArray(yAxisData);
+
+                    Log.i("LISTA INTEGER : ", yAxisData.toString());
 
                     drawPlot(axisData, yAxisData);
                 }
 
                 if(selectedItem.equals("Kroki"))
                 {
-                    String[] axisData = {"Jan", "Feb", "Mar", "Apr", "May", "June"};
 
-                    int[] yAxisData = {20, 25, 12, 12, 12, 40};
+                    String[] axisData = new String[daysArray.size()];
+                    axisData = daysArray.toArray(axisData);
+
+                    Integer[] yAxisData = new Integer[stepsArray.size()];
+                    yAxisData = stepsArray.toArray(yAxisData);
 
                     drawPlot(axisData, yAxisData);
                 }
 
                 if(selectedItem.equals("Woda"))
                 {
-                    // do your stuff
+                    String[] axisData = new String[daysArray.size()];
+                    axisData = daysArray.toArray(axisData);
+
+                    Integer[] yAxisData = new Integer[waterArray.size()];
+                    yAxisData = waterArray.toArray(yAxisData);
+
+                    drawPlot(axisData, yAxisData);
                 }
 
                 if(selectedItem.equals("Sen"))
@@ -137,7 +152,7 @@ public class StatsActivity extends AppCompatActivity {
     }
 
 
-    private void drawPlot(String[] axisData, int[] yAxisData) {
+    private void drawPlot(String[] axisData, Integer[] yAxisData) {
 
         LineChartView lineChartView = findViewById(R.id.chart);
 
@@ -217,7 +232,7 @@ public class StatsActivity extends AppCompatActivity {
                 String waga_z_bazy = String.valueOf(document.get("waga").asString());
                 String kroki_z_bazy = String.valueOf(document.get("kroki").asString());
                 String woda_z_bazy = String.valueOf(document.get("woda").asString());
-                // String sen_z_bazy = String.valueOf(document.get("sen").asString());  ?? nie wiem czy jest w bazie
+               // String sen_z_bazy = String.valueOf(document.get("sen").asString());
 
                 try {
                     String jsonDocument = Document.toJson(document);
@@ -227,10 +242,15 @@ public class StatsActivity extends AppCompatActivity {
                     Log.i("juzNieMoge", "error in GetItemAsyncTask show contact as json: " + e.getLocalizedMessage());
                 }
 
-                if (waga_z_bazy != null && woda_z_bazy != null && kroki_z_bazy != null ) {
+                if (waga_z_bazy != null && woda_z_bazy != null && kroki_z_bazy != null) {
 
                     DBUserData tempUser = new DBUserData(id_z_bazy, waga_z_bazy, kroki_z_bazy, woda_z_bazy);
-                    statystyki.add(tempUser);
+                    // statystyki.add(tempUser);
+
+                    stepsArray.add(Integer.parseInt(kroki_z_bazy));
+                    waterArray.add(Integer.parseInt(woda_z_bazy));
+                    weightArray.add(Integer.parseInt(waga_z_bazy));
+                   // sleepArray.add(Integer.parseInt(sen_z_bazy));
 
                     Log.i(TAG, "PRZYSZŁO Z BAZY: " + tempUser.toString());
 
