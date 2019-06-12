@@ -48,7 +48,7 @@
         <activity android:name=".ShowMeActivity" />
         <activity android:name=".ShowMeActivity1" />
         <activity android:name=".DbActivity" />
-
+        <activity android:name=".StatsActivity" />
         <service
             android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
             android:enabled="true" />

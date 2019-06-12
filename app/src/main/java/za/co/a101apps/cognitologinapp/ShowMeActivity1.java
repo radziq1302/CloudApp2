@@ -2,12 +2,12 @@ package za.co.a101apps.cognitologinapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -24,52 +23,34 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
-
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobile.client.AWSMobileClient;
-
 import com.amazonaws.mobile.client.UserStateDetails;
 import com.amazonaws.mobile.client.UserStateListener;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoDevice;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GetDetailsHandler;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferNetworkLossHandler;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
-import com.amazonaws.mobileconnectors.s3.*;
-
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
-
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.amazonaws.ClientConfiguration;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class ShowMeActivity1 extends AppCompatActivity {
@@ -79,15 +60,20 @@ public class ShowMeActivity1 extends AppCompatActivity {
     public static final int IMAGE_GALLERY_REQUEST = 20;
     private Uri selectedImageUri;
     private CognitoCachingCredentialsProvider credentialsProvider;
-    private File zdjecie;
+    private File sciecha;
     private ImageView imageV;
+    private ImageView imageV2;
+    private boolean downloadDone=false;
+    private boolean firstIV=false;
     private int column_index;
     private String imagePath;
-    private InputStream mIinputStream;
+    private String chooseMe;
+
     private Context context;
     private String sc;
-    private String userID;
-    private String abc;
+    private String LOG_TAG="kupadupa6969";
+    private List<String> zBazy;
+    private List<String> zBazy69;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,9 +91,11 @@ public class ShowMeActivity1 extends AppCompatActivity {
         setContentView(R.layout.activity_show_me);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
+        sciecha = new File(Environment.getExternalStorageDirectory()+"/CloudFit/");
+        if(!sciecha.exists()) sciecha.mkdir();
 
         imageV=(ImageView)findViewById(R.id.imageView);
+        imageV2=(ImageView)findViewById(R.id.second_IV);
         context=getApplicationContext();
         //AWSMobileClient.getInstance().initialize(this).execute();
         AWSMobileClient.getInstance().addUserStateListener(new UserStateListener() {
@@ -134,7 +122,16 @@ public class ShowMeActivity1 extends AppCompatActivity {
                 }
             }
         });
+        final CognitoSettings cognitoSettings = new CognitoSettings(this);
 
+        /*Identity pool credentials provider*/
+        Log.i(TAG, "getting Identity Pool credentials provider");
+        credentialsProvider = cognitoSettings.getCredentialsProvider();
+        /*get user - User Pool*/
+        Log.i(TAG, "getting user Pool user");
+        CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
+
+        final TextView temp = findViewById(R.id.tempol);
         Button buttonDownload = findViewById(R.id.buttonDownload);
         Button buttonChoose = findViewById(R.id.choose_btn);
         Button buttonUpload = findViewById(R.id.buttonUpload);
@@ -153,14 +150,54 @@ public class ShowMeActivity1 extends AppCompatActivity {
                 proceed(1);
             }
         });
+        AmazonS3Client s3Client = new AmazonS3Client(credentialsProvider,Region.getRegion( Regions.US_EAST_2 ));
+        String prefix =  credentialsProvider.getIdentityId()+"/1/";
+        List<S3ObjectSummary> s3objects = s3Client.listObjects("s3-cloud2",prefix).getObjectSummaries();
+        //s3objects.get(1).getKey();
+        //s3objects.size();
+        zBazy=new ArrayList<String>();
+        zBazy69=new ArrayList<String>();
+        Iterator <S3ObjectSummary> iter = s3objects.iterator();
+        while(iter.hasNext()){
+            zBazy.add(iter.next().getKey().substring(49));
+        }
+        Iterator <S3ObjectSummary> iter1 = s3objects.iterator();
+        while(iter1.hasNext()){
+            zBazy69.add(iter1.next().getKey());
+        }
+        Log.v("zbazy69", s3objects.size()+"");
+        String[] zBazy1 = new String[zBazy.size()];
+        zBazy1 = zBazy.toArray(zBazy1);
 
-
-        /*buttonDownload.setOnClickListener(new View.OnClickListener() {
+        final String[] zBazy2 = zBazy1;
+        buttonDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                proceed(2);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShowMeActivity1.this);
+                builder.setTitle("Zdjecia");
+                builder.setItems(zBazy2, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        temp.setText(zBazy2[which]);
+                        downloadWithTransferUtility(zBazy69.get(which),"/"+which);
+                        Log.v("CoPobiera", zBazy69.get(which));
+/*
+                        String sciezkaPliku=sciecha+"/"+String.valueOf(which)+".png";
+                        Log.v("musiDzialac", sciezkaPliku);
+                        Uri UriSciezkaPliku = Uri.parse(sciezkaPliku);
+                        File fileDown = new File(UriSciezkaPliku.getPath());
+                        //}
+
+                        //us-east-2:88d2c292-f64c-4aca-a667-b284fa4ce053
+                        imageV.setImageURI(UriSciezkaPliku);*/
+                    }
+                })
+                ;
+                builder.show();
+
             }
-        });*/
+        });
+
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -174,6 +211,7 @@ public class ShowMeActivity1 extends AppCompatActivity {
 
             imageV.setImageURI(selectedImageUri);
             sc = getRealPathFromUri(context, selectedImageUri);
+
             Log.v("sciezka", sc);//selectedImageUri.getPath());
 
         }
@@ -185,13 +223,10 @@ public class ShowMeActivity1 extends AppCompatActivity {
         /*Identity pool credentials provider*/
         Log.i(TAG, "getting Identity Pool credentials provider");
         credentialsProvider = cognitoSettings.getCredentialsProvider();
-
         /*get user - User Pool*/
         Log.i(TAG, "getting user Pool user");
         CognitoUser currentUser = cognitoSettings.getUserPool().getCurrentUser();
 
-        //Log.v("userid:",userID);
-        /*get token for logged in user - user pool*/
         Log.i(TAG, "calling getSessionInBackground....");
         currentUser.getSessionInBackground(new AuthenticationHandler() {
             @Override
@@ -277,10 +312,7 @@ public class ShowMeActivity1 extends AppCompatActivity {
             e.printStackTrace();
         }
         Uri path1 = Uri.parse(path);
-        //String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
-        //String path1 = Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DCIM + "/";
         File file = new File(path1.getPath());
-        //File file = new File(path.getLastPathSegment());
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted
@@ -290,15 +322,9 @@ public class ShowMeActivity1 extends AppCompatActivity {
                     1);
         }
         Log.v("pliczek",path1.getPath()+" abc"+file.length() + " cbd"); //path.getLastPathSegment()
-        //File file = new File(path1, "IMG_20190512_212216_HDR.jpg");//fileName);
 
-        //AmazonS3 s3Client = AmazonS3ClientBuilder1.standard().withCredentials(new AWSStaticCredentialsProvider(creds)).build();
-        //AmazonS3Client s3Client = new AmazonS3Client(credentialsProvider);
         TransferNetworkLossHandler.getInstance(context);
         AmazonS3Client s3Client = new AmazonS3Client(credentialsProvider,Region.getRegion( Regions.US_EAST_2 ));
-        //AWSMobileClient.getInstance().getTokens().getIdToken().getClaim("sub");
-        //Log.v("s3bucket",s3Client.getBucketLocation("s3-cloudapp2") + " cbd"); //s3Client.getBucketLocation("s3-cloudapp2");
-        //Log.v("s3bucket",s3Client.getS3AccountOwner()+"");
 
         TransferUtility transferUtility =
                 TransferUtility.builder()
@@ -306,13 +332,7 @@ public class ShowMeActivity1 extends AppCompatActivity {
                         .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
                         .s3Client(s3Client)
                         .build();
-        //credentialsProvider.getCredentials().
         Log.v("credential", credentialsProvider.getIdentityId()+"");
-       /* try {
-            Log.v("tomektoken", AWSMobileClient.getInstance().getTokens().getIdToken().getClaim("sub")+"");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         String getS3Key=credentialsProvider.getIdentityId()+"/1/"+file.getName(); //public/" +file.getName();
         //String S3Key=credentialsProvider.getIdentityId()+"/cognito/ad757aec-7bdc-427e-9e12-5cf6f24d9249/1/"+file.getName();
         Log.v("s3key", credentialsProvider.getIdentityId()+"");
@@ -329,12 +349,6 @@ public class ShowMeActivity1 extends AppCompatActivity {
                                                @Override
                                                public void onStateChanged(int id, TransferState state) {
                                                    if (TransferState.COMPLETED == state) {
-                                                       // Handle a completed upload.
-                                                       /*try {
-                                                           mIinputStream.reset();
-                                                       } catch (IOException e) {
-                                                           e.printStackTrace();
-                                                       }*/
                                                        Log.i(TAG, "Upload completed");
                                                    }
                                                }
@@ -356,17 +370,6 @@ public class ShowMeActivity1 extends AppCompatActivity {
         );
 
     }
-            public String getPath(Uri uri) {
-        String[] projection = {MediaStore.MediaColumns.DATA};
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        column_index = cursor
-                .getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        cursor.moveToFirst();
-        imagePath = cursor.getString(column_index);
-
-        return cursor.getString(column_index);
-    }
-
 
     public static String getRealPathFromUri(Context context, Uri contentUri) {
         Cursor cursor = null;
@@ -383,6 +386,71 @@ public class ShowMeActivity1 extends AppCompatActivity {
                 cursor.close();
             }
         }
+    }
+    private void downloadWithTransferUtility(String key, String it) {
+        final String it2=it;
+        TransferNetworkLossHandler.getInstance(context);
+        AmazonS3Client s3Client = new AmazonS3Client(credentialsProvider,Region.getRegion( Regions.US_EAST_2 ));
+        TransferUtility transferUtility =
+                TransferUtility.builder()
+                        .context(getApplicationContext())
+                        .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
+                        .s3Client(s3Client)
+                        .build();
+
+        TransferObserver downloadObserver =
+                transferUtility.download("s3-cloud2",
+                        key,
+                        new File(sciecha+it+".png"));
+
+        // Attach a listener to the observer to get state update and progress notifications
+        downloadObserver.setTransferListener(new TransferListener() {
+
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (TransferState.COMPLETED == state) {
+                    // Handle a completed upload.
+                    downloadDone=true;
+                    String sciezkaPliku=sciecha+"/"+String.valueOf(it2)+".png";//1.png
+                    Log.v("musiDzialac", sciezkaPliku);
+                    Uri UriSciezkaPliku = Uri.parse(sciezkaPliku);
+                    File fileDown = new File(UriSciezkaPliku.getPath());
+                    if (!firstIV){
+                    imageV.setImageURI(UriSciezkaPliku);
+                    firstIV=true;}
+                    else
+                        imageV2.setImageURI(UriSciezkaPliku);
+                }
+                if(state == TransferState.CANCELED || state == TransferState.FAILED || state == TransferState.WAITING_FOR_NETWORK) {
+                    Log.v("downloadObserver","No nie poszło");
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                float percentDonef = ((float)bytesCurrent/(float)bytesTotal) * 100;
+                int percentDone = (int)percentDonef;
+
+                Log.d(LOG_TAG, "   ID:" + id + "   bytesCurrent: " + bytesCurrent + "   bytesTotal: " + bytesTotal + " " + percentDone + "%");
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                // Handle errors
+            }
+
+        });
+
+        // If you prefer to poll for the data, instead of attaching a
+        // listener, check for the state and progress in the observer.
+        if (TransferState.COMPLETED == downloadObserver.getState()) {
+            // Handle a completed upload.
+            downloadDone=true;
+
+        }
+
+        Log.d(LOG_TAG, "Bytes Transferrred: " + downloadObserver.getBytesTransferred());
+        Log.d(LOG_TAG, "Bytes Total: " + downloadObserver.getBytesTotal());
     }
 
 }
