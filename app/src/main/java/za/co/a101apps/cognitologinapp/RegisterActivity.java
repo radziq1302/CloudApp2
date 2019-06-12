@@ -1,5 +1,6 @@
 package za.co.a101apps.cognitologinapp;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -83,6 +84,8 @@ public class RegisterActivity extends AppCompatActivity {
                 cognitoSettings.getUserPool().signUpInBackground(String.valueOf(inputUsername.getText())
                         , String.valueOf(inputPassword.getText()), userAttributes
                         , null, signupCallback);
+                Intent i = new Intent(getApplicationContext(), VerifyActivity.class);
+                startActivity(i);
             }
         });
     }

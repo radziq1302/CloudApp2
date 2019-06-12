@@ -144,11 +144,6 @@ public class DbAccess {
         cloudCon.put("number", 5);
 
 
-        /*Set<String> mySet = new HashSet<String>();
-        mySet.add("abc");
-        mySet.add("set item 2");
-        cloudCon.put("Set", mySet);*/
-
         // An Ordered List
         DynamoDBEntry item1 = new Primitive("orderedlist item 75");
         DynamoDBEntry item2 = new Primitive("orderedlist item 57");
@@ -162,9 +157,9 @@ public class DbAccess {
         /*PutItem only supports ReturnValues All old and None*/
         PutItemOperationConfig putItemOperationConfig = new PutItemOperationConfig();
         putItemOperationConfig.withReturnValues(ReturnValue.ALL_OLD);
-//        putItemOperationConfig.withReturnValues(ReturnValue.NONE);
+        putItemOperationConfig.withReturnValues(ReturnValue.NONE);
 
-        Document result = dbTable.putItem(cloudCon, putItemOperationConfig);
+        Document result = dbTable.putItem(cloudCon,putItemOperationConfig);
 
         return result;
     }
