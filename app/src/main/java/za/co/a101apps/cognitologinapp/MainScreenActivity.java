@@ -53,9 +53,7 @@ public class MainScreenActivity extends AppCompatActivity {
 
     private FloatingActionButton fab; // floating button glowny
     private FrameLayout fab1; // kazdy pomniejszy sklada sie z frameLayout + text view, ktory musialam schowac zanim sie otworzy
-    private FrameLayout fab2; // dlatego jest tyle tych zmiennych
     private TextView fab1_2;
-    private TextView fab2_2;
 
 
     private boolean nie_istnieje = false;
@@ -86,9 +84,7 @@ public class MainScreenActivity extends AppCompatActivity {
 
         fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         fab1 = (FrameLayout) findViewById(R.id.fab1);
-        fab2 = (FrameLayout) findViewById(R.id.fab2);
         fab1_2 = (TextView) findViewById(R.id.fab1_2);
-        fab2_2 = (TextView) findViewById(R.id.fab2_2);
 
 
 
@@ -149,16 +145,6 @@ public class MainScreenActivity extends AppCompatActivity {
             }
         });
 
-        fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.v("kupaSen",currentUser.getUserId()+"");
-                Intent getMeasures = new Intent(MainScreenActivity.this, InputMeasuresActivity.class);
-                getMeasures.putExtra("type","SEN");
-                startActivity(getMeasures);
-
-            }
-        });
 
 
         // reaktywnosc paskow progresu - w sumie gotowe tylko ze te dane sie nigdzie nie zapisuja
@@ -269,18 +255,15 @@ public class MainScreenActivity extends AppCompatActivity {
     private void showFABMenu(){
         isFABOpen=true;
         fab1_2.setVisibility(View.VISIBLE);
-        fab2_2.setVisibility(View.VISIBLE);
         fab1.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
-        fab2.animate().translationY(-getResources().getDimension(R.dimen.standard_105));
+
 
     }
 
     private void closeFABMenu(){
         isFABOpen=false;
         fab1_2.setVisibility(View.VISIBLE);
-        fab2_2.setVisibility(View.VISIBLE);
         fab1.animate().translationY(0);
-        fab2.animate().translationY(0);
     }
 
     private class GetItemAsyncTask extends AsyncTask<String, Void, Document> {
@@ -318,6 +301,7 @@ public class MainScreenActivity extends AppCompatActivity {
                 String waga_z_bazy = String.valueOf(document.get("waga").asString());
                 String kroki_z_bazy = String.valueOf(document.get("kroki").asString());
                 String woda_z_bazy = String.valueOf(document.get("woda").asString());
+                String sen_z_bazy = String.valueOf(document.get("sen").asString());
 
 //waga tutaj
                 try {
@@ -330,6 +314,7 @@ public class MainScreenActivity extends AppCompatActivity {
 
                 if (waga_z_bazy != null && woda_z_bazy != null && kroki_z_bazy != null ) {
                     wartosc_waga.setText(waga_z_bazy + " kg");
+                    wartosc_sen.setText(sen_z_bazy + " h");
 
                     progres_woda.setProgress(Integer.parseInt(woda_z_bazy));
                     aktualna_woda.setText(woda_z_bazy + " / " + Integer.toString(wyliczone_max_woda));

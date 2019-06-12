@@ -25,12 +25,13 @@ public class DBUserData extends DBObject implements Serializable {
         this.aktywnosc = aktywnosc;
     }
 
-    public DBUserData(String id, String waga, String kroki, String woda) {
+    public DBUserData(String id, String waga, String kroki, String woda, String sen) {
         super();
         this.ID=id;
         this.waga = waga;
         this.kroki = kroki;
         this.woda = woda;
+        this.sen = sen;
 
     }
 

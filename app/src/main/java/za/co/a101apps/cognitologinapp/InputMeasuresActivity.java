@@ -20,7 +20,8 @@ import java.util.Date;
 
 public class InputMeasuresActivity extends AppCompatActivity {
 
-    private EditText wprowadzona_wartosc;
+    private EditText wprowadzona_wartosc_waga;
+    private EditText wprowadzona_wartosc_sen;
     private boolean valid = false;
     private Button wyslij;
     private Button powrot;
@@ -39,11 +40,13 @@ public class InputMeasuresActivity extends AppCompatActivity {
         final String currentDateandTime = sdf.format(new Date());
         Log.v("data691", currentDateandTime+"");
         // zmienna type mowi czy to jest waga czy sen
-        type = getIntent().getStringExtra("type");
+
         kroki = getIntent().getStringExtra("kroki");
         woda = getIntent().getStringExtra("woda");
 
-        wprowadzona_wartosc = (EditText) findViewById(R.id.input_value);
+        wprowadzona_wartosc_sen = (EditText) findViewById(R.id.sen);
+        wprowadzona_wartosc_waga = (EditText) findViewById(R.id.waga);
+
         wyslij = (Button) findViewById(R.id.button_send);
         powrot = (Button) findViewById(R.id.button_back);
 
@@ -66,9 +69,10 @@ public class InputMeasuresActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (wprowadzona_wartosc.getText().toString().equals("")) {
+                if (wprowadzona_wartosc_sen.getText().toString().equals("") && wprowadzona_wartosc_waga.getText().toString().equals("")) {
                     valid = false;
-                    Log.i("warunek",wprowadzona_wartosc.getText().toString());
+                    Log.i("warunek sen",wprowadzona_wartosc_sen.getText().toString());
+                    Log.i("warunek waga",wprowadzona_wartosc_waga.getText().toString());
                 } else {
                     valid = true;
 
@@ -77,43 +81,32 @@ public class InputMeasuresActivity extends AppCompatActivity {
 
 
                 if(valid) {
-                    switch (type) {
-                        case "WAGA":
-                            Log.i("dostalismy wartosc: ","waga");
+
+                    Log.i("dostalismy wartosc: ","waga");
 
 
-                            final String nazwa_uz = (String) getIntent().getStringExtra("idZasrane");
-                            Log.v("data6969", nazwa_uz+"");
-                            String id=currentDateandTime+"-"+nazwa_uz.toString();
+                    final String nazwa_uz = (String) getIntent().getStringExtra("idZasrane");
+                    Log.v("data6969", nazwa_uz+"");
+                    String id=currentDateandTime+"-"+nazwa_uz.toString();
 
-                            Log.v("data6969", kroki);
-                            Log.v("data6969", woda);
+                    Log.v("data6969", kroki);
+                    Log.v("data6969", woda);
 
-                            DBUserData userdata = new DBUserData(id, wprowadzona_wartosc.getText().toString(), kroki, woda);
-                            InputMeasuresActivity.AddItemAsyncTask addItemTask;
-                            if (userdata != null) {
-                                Log.v("cojest",userdata.getID()+userdata.getWaga()+"");
-                                addItemTask = new InputMeasuresActivity.AddItemAsyncTask();
-                                Log.i(TAG, "getting random contact...");
-                                Gson gson = new Gson();
-                                String json = gson.toJson(userdata);
-                                Document doc = Document.fromJson(json);
-                                addItemTask.execute(doc); }
-                            Log.i("warunek",wprowadzona_wartosc.getText().toString());
-
-
-                            startActivity(come_back);
-                            break;
+                    DBUserData userdata = new DBUserData(id, wprowadzona_wartosc_waga.getText().toString(), kroki, woda, wprowadzona_wartosc_sen.getText().toString());
+                    InputMeasuresActivity.AddItemAsyncTask addItemTask;
+                    if (userdata != null) {
+                        Log.v("cojest",userdata.getID()+userdata.getWaga()+"");
+                        addItemTask = new InputMeasuresActivity.AddItemAsyncTask();
+                        Log.i(TAG, "getting random contact...");
+                        Gson gson = new Gson();
+                        String json = gson.toJson(userdata);
+                        Document doc = Document.fromJson(json);
+                        addItemTask.execute(doc); }
+                    Log.i("input measures","poszlo do bazy");
 
 
-                        case "SEN":
-                            Log.i("dostalismy wartosc: ","sen");
+                    startActivity(come_back);
 
-                            come_back.putExtra("sen",wprowadzona_wartosc.getText().toString());
-
-                            startActivity(come_back);
-                            break;
-                    }
                 } else {
                     Toast.makeText(InputMeasuresActivity.this, "wprowadz dane", Toast.LENGTH_SHORT).show();
                 }

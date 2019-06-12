@@ -232,7 +232,7 @@ public class StatsActivity extends AppCompatActivity {
                 String waga_z_bazy = String.valueOf(document.get("waga").asString());
                 String kroki_z_bazy = String.valueOf(document.get("kroki").asString());
                 String woda_z_bazy = String.valueOf(document.get("woda").asString());
-               // String sen_z_bazy = String.valueOf(document.get("sen").asString());
+                String sen_z_bazy = String.valueOf(document.get("sen").asString());
 
                 try {
                     String jsonDocument = Document.toJson(document);
@@ -244,7 +244,7 @@ public class StatsActivity extends AppCompatActivity {
 
                 if (waga_z_bazy != null && woda_z_bazy != null && kroki_z_bazy != null) {
 
-                    DBUserData tempUser = new DBUserData(id_z_bazy, waga_z_bazy, kroki_z_bazy, woda_z_bazy);
+                    DBUserData tempUser = new DBUserData(id_z_bazy, waga_z_bazy, kroki_z_bazy, woda_z_bazy, sen_z_bazy);
                     // statystyki.add(tempUser);
 
                     stepsArray.add(Integer.parseInt(kroki_z_bazy));
