@@ -33,7 +33,7 @@ public class loadingActivity extends Activity {
                     {intent = new Intent(getApplicationContext(),MainScreenActivity.class);
                     startActivity(intent);}
                     else {
-                        intent=new Intent(getApplicationContext(),Menu.class);
+                        intent=new Intent(getApplicationContext(),GetUserDataActivity.class);
                         startActivity(intent);
                     }
                     finish();

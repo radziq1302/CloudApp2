@@ -96,7 +96,7 @@ public class DbActivity extends AppCompatActivity {
                     String json = gson.toJson(dane);
                     Document doc = Document.fromJson(json);
                     addItemTask.execute(doc); }
-                Intent i = new Intent(DbActivity.this, MainWindowActivity.class);
+                Intent i = new Intent(DbActivity.this, MainScreenActivity.class);
                 startActivity(i);
             }
         });
@@ -239,13 +239,13 @@ public class DbActivity extends AppCompatActivity {
             } catch (Exception e) {
                 Log.i(TAG, "error adding contact: " + e.getMessage());
 
-                runOnUiThread(new Runnable() {
+                /*runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         textViewItem.setText("Error adding contact");
                         textViewItem.setBackgroundColor(Color.RED);
                     }
-                });
+                });*/
             }
             return result;
         }
