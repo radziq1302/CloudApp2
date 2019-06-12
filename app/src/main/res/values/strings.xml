@@ -19,4 +19,13 @@
     </string-array>
     <string name="title_activity_main_window">MainWindowActivity</string>
     <string name="welcome">Siemka</string>
+
+    <string-array name="plots_arrays">
+        <item>Waga</item>
+        <item>Wzrost</item>
+        <item>Kroki</item>
+        <item>Sen</item>
+    </string-array>
+
+
 </resources>

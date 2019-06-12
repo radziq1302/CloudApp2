@@ -1,9 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="za.co.a101apps.cognitologinapp.StatsActivity">
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" >
 
-</android.support.constraint.ConstraintLayout>
+    <Spinner
+        android:id="@+id/wybor_wykresu"
+        android:layout_width="346dp"
+        android:layout_height="73dp"
+        android:entries="@array/plots_arrays"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="30dp" />
+
+
+    <lecho.lib.hellocharts.view.LineChartView
+        android:id="@+id/chart"
+        android:layout_width="334dp"
+        android:layout_height="455dp"
+        android:layout_below="@id/wybor_wykresu"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="97dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="76dp" />
+
+
+
+</RelativeLayout>
+
