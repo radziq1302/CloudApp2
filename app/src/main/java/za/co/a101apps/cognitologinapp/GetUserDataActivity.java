@@ -81,10 +81,10 @@ public class GetUserDataActivity extends AppCompatActivity {
                     Context context = GetUserDataActivity.this;
                     //context=GetUserDataActivity.this;
                     //dba.addDataToDB("User data", userdata, context);
-                    Log.v("kurwaaaa",userdata.getID());
+                    Log.v("id usera ",userdata.getID());
                     Intent validDataSent = new Intent(GetUserDataActivity.this, DbActivity.class);
                     validDataSent.putExtra("daneFormularza",userdata);
-                    validDataSent.putExtra("idZasrane",userdata.getID());
+                    validDataSent.putExtra("idUser",userdata.getID());
                     startActivity(validDataSent);
                 }
                 else {

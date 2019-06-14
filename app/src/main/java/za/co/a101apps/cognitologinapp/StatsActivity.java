@@ -27,11 +27,13 @@ import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
+
 
 public class StatsActivity extends AppCompatActivity {
 
-    private ArrayList<DBUserData> statystyki = new ArrayList<>();
+
     private ArrayList<String> daysArray = new ArrayList<>();
     private ArrayList<Integer> stepsArray = new ArrayList<>();
     private ArrayList<Integer> weightArray = new ArrayList<>();
@@ -46,7 +48,7 @@ public class StatsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stats);
 
-        final String nazwa_uz = (String) getIntent().getStringExtra("idZasrane");
+        final String nazwa_uz = (String) getIntent().getStringExtra("idUser");
 
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         final String currentDateandTime = sdf.format(new Date());
@@ -136,7 +138,13 @@ public class StatsActivity extends AppCompatActivity {
 
                 if(selectedItem.equals("Sen"))
                 {
-                    // do your stuff
+                    String[] axisData = new String[daysArray.size()];
+                    axisData = daysArray.toArray(axisData);
+
+                    Integer[] yAxisData = new Integer[sleepArray.size()];
+                    yAxisData = sleepArray.toArray(yAxisData);
+
+                    drawPlot(axisData, yAxisData);
                 }
 
 
@@ -155,6 +163,8 @@ public class StatsActivity extends AppCompatActivity {
     private void drawPlot(String[] axisData, Integer[] yAxisData) {
 
         LineChartView lineChartView = findViewById(R.id.chart);
+
+        //lineChartView.setExtraOffsets(10,10);
 
         List yAxisValues = new ArrayList();
         List axisValues = new ArrayList();
@@ -181,9 +191,22 @@ public class StatsActivity extends AppCompatActivity {
         data.setAxisYLeft(yAxis);
 
         Axis xAxis = new Axis();
-        data.setAxisYLeft(xAxis);
+        data.setAxisXBottom(xAxis);
 
-        xAxis.setTextSize(5);
+        xAxis.setTextSize(16);
+        yAxis.setTextSize(16);
+
+        xAxis.setTextColor(Color.parseColor("#03A9F4"));
+        yAxis.setTextColor(Color.parseColor("#03A9F4"));
+
+        yAxis.setName("Value");
+        xAxis.setName("Days of using app");
+
+        Viewport viewport = new Viewport(lineChartView.getMaximumViewport());
+        viewport.top =110;
+        lineChartView.setMaximumViewport(viewport);
+        lineChartView.setCurrentViewport(viewport);
+
 
         lineChartView.setLineChartData(data);
 
@@ -225,14 +248,36 @@ public class StatsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Document document) {
             super.onPostExecute(document);
-            //load text view
+
+            String sen_z_bazy = "0";
+            String kroki_z_bazy = "0";
+            String id_z_bazy = "0";
+            String waga_z_bazy = "0";
+            String woda_z_bazy = "0";
+
 
             if (document != null) {
-                String id_z_bazy = String.valueOf(document.get("ID").asString());
-                String waga_z_bazy = String.valueOf(document.get("waga").asString());
-                String kroki_z_bazy = String.valueOf(document.get("kroki").asString());
-                String woda_z_bazy = String.valueOf(document.get("woda").asString());
-                String sen_z_bazy = String.valueOf(document.get("sen").asString());
+
+                if(document.get("ID") != null) {
+                    id_z_bazy = String.valueOf(document.get("ID").asString());
+                }
+
+                if(document.get("waga") != null) {
+                    waga_z_bazy = String.valueOf(document.get("waga").asString());
+                }
+
+                if(document.get("kroki") != null) {
+                    kroki_z_bazy = String.valueOf(document.get("kroki").asString());
+                }
+
+                if(document.get("woda") != null) {
+                    woda_z_bazy = String.valueOf(document.get("woda").asString());
+                }
+
+                if(document.get("sen") != null) {
+                    sen_z_bazy = String.valueOf(document.get("sen").asString());
+                }
+
 
                 try {
                     String jsonDocument = Document.toJson(document);
@@ -242,23 +287,18 @@ public class StatsActivity extends AppCompatActivity {
                     Log.i("juzNieMoge", "error in GetItemAsyncTask show contact as json: " + e.getLocalizedMessage());
                 }
 
-                if (waga_z_bazy != null && woda_z_bazy != null && kroki_z_bazy != null) {
+                DBUserData tempUser = new DBUserData(id_z_bazy, waga_z_bazy, kroki_z_bazy, woda_z_bazy, sen_z_bazy);
 
-                    DBUserData tempUser = new DBUserData(id_z_bazy, waga_z_bazy, kroki_z_bazy, woda_z_bazy, sen_z_bazy);
-                    // statystyki.add(tempUser);
+                stepsArray.add(Integer.parseInt(kroki_z_bazy));
+                waterArray.add(Integer.parseInt(woda_z_bazy));
+                weightArray.add(Integer.parseInt(waga_z_bazy));
+                sleepArray.add(Integer.parseInt(sen_z_bazy));
 
-                    stepsArray.add(Integer.parseInt(kroki_z_bazy));
-                    waterArray.add(Integer.parseInt(woda_z_bazy));
-                    weightArray.add(Integer.parseInt(waga_z_bazy));
-                   // sleepArray.add(Integer.parseInt(sen_z_bazy));
+                Log.i(TAG, "PRZYSZŁO Z BAZY: " + tempUser.toString());
 
-                    Log.i(TAG, "PRZYSZŁO Z BAZY: " + tempUser.toString());
 
-                } else {
-                    Log.i(TAG, "error getting data: " + "1: " + waga_z_bazy  + "2: " + woda_z_bazy  + "3: " + kroki_z_bazy);
-                }
             } else {
-                Log.i(TAG, "error getting data: " + "ktores jest nullem");
+                Log.i(TAG, "error getting data: " + "cos nie przyszło z bazy");
             }
         }
     }

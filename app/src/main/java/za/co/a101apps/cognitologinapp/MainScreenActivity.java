@@ -135,10 +135,10 @@ public class MainScreenActivity extends AppCompatActivity {
                 Log.v("kupa",currentUser.getUserId()+"");
                 Intent getMeasures = new Intent(MainScreenActivity.this, InputMeasuresActivity.class);
                 getMeasures.putExtra("type","WAGA");
-                getMeasures.putExtra("idZasrane",currentUser.getUserId());
+                getMeasures.putExtra("idUser",currentUser.getUserId());
                 getMeasures.putExtra("woda",Integer.toString(progres_woda.getProgress()));
                 getMeasures.putExtra("kroki",Integer.toString(progres_kroki.getProgress()));
-                getMeasures.putExtra("idZasrane",currentUser.getUserId());
+                getMeasures.putExtra("idUser",currentUser.getUserId());
 
                 startActivity(getMeasures);
 
@@ -196,7 +196,7 @@ public class MainScreenActivity extends AppCompatActivity {
         wykresy.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent wykresyOkienko = new Intent(MainScreenActivity.this, StatsActivity.class);
-                wykresyOkienko.putExtra("idZasrane",currentUser.getUserId());
+                wykresyOkienko.putExtra("idUser",currentUser.getUserId());
                 startActivity(wykresyOkienko);
             }
         });
@@ -205,7 +205,7 @@ public class MainScreenActivity extends AppCompatActivity {
         galeria.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent galeriaOkienko = new Intent(MainScreenActivity.this, ShowMeActivity1.class);
-                galeriaOkienko.putExtra("idZasrane",currentUser.getUserId());
+                galeriaOkienko.putExtra("idUser",currentUser.getUserId());
                 startActivity(galeriaOkienko);
             }
         });
@@ -262,7 +262,7 @@ public class MainScreenActivity extends AppCompatActivity {
 
     private void closeFABMenu(){
         isFABOpen=false;
-        fab1_2.setVisibility(View.VISIBLE);
+        fab1_2.setVisibility(View.INVISIBLE);
         fab1.animate().translationY(0);
     }
 
@@ -272,14 +272,14 @@ public class MainScreenActivity extends AppCompatActivity {
 
             Document document = null;
 
-            Log.i("juzNieMoge", "in GetItemAsyncTask doInBackground....");
+            Log.i("z bazy", "in GetItemAsyncTask doInBackground....");
             DbAccess databaseAccess = DbAccess.getInstance(MainScreenActivity.this);
             try {
-                Log.i("juzNieMoge", "getting data: " + id[0]);
+                Log.i("z bazy", "getting data: " + id[0]);
                 document = databaseAccess.getItem(id[0]);
             }
             catch (Exception e) {
-                Log.i("juzNieMoge", "error getting data: " + e.getMessage());
+                Log.i("z bazy", "error getting data: " + e.getMessage());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -306,10 +306,10 @@ public class MainScreenActivity extends AppCompatActivity {
 //waga tutaj
                 try {
                     String jsonDocument = Document.toJson(document);
-                    Log.i("juzNieMoge", "Contact: " + jsonDocument);
+                    Log.i("json z bazy", "Contact: " + jsonDocument);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.i("juzNieMoge", "error in GetItemAsyncTask show contact as json: " + e.getLocalizedMessage());
+                    Log.i("json z bazy", "error in GetItemAsyncTask show contact as json: " + e.getLocalizedMessage());
                 }
 
                 if (waga_z_bazy != null && woda_z_bazy != null && kroki_z_bazy != null ) {

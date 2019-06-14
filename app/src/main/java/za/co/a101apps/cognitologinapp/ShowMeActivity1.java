@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobile.client.AWSMobileClient;
@@ -71,7 +72,7 @@ public class ShowMeActivity1 extends AppCompatActivity {
 
     private Context context;
     private String sc;
-    private String LOG_TAG="kupadupa6969";
+    private String LOG_TAG="Zdjecia_showme1";
     private List<String> zBazy;
     private List<String> zBazy69;
     @Override
@@ -350,6 +351,7 @@ public class ShowMeActivity1 extends AppCompatActivity {
                                                public void onStateChanged(int id, TransferState state) {
                                                    if (TransferState.COMPLETED == state) {
                                                        Log.i(TAG, "Upload completed");
+                                                       Toast.makeText(ShowMeActivity1.this, "Zdjęcie wysłane", Toast.LENGTH_SHORT).show();
                                                    }
                                                }
 

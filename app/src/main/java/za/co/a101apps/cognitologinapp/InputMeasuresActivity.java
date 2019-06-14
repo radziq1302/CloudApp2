@@ -85,7 +85,7 @@ public class InputMeasuresActivity extends AppCompatActivity {
                     Log.i("dostalismy wartosc: ","waga");
 
 
-                    final String nazwa_uz = (String) getIntent().getStringExtra("idZasrane");
+                    final String nazwa_uz = (String) getIntent().getStringExtra("idUser");
                     Log.v("data6969", nazwa_uz+"");
                     String id=currentDateandTime+"-"+nazwa_uz.toString();
 

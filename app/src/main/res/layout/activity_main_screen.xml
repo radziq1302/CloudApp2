@@ -22,11 +22,10 @@
         app:layout_constraintVertical_bias="0.134" />
 
 
-
     <ImageView
         android:id="@android:id/icon"
-        android:layout_width="138dp"
-        android:layout_height="139dp"
+        android:layout_width="142dp"
+        android:layout_height="118dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
@@ -229,7 +228,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="clip_vertical"
-            android:text="Waga"
+            android:text="Dodaj dane"
             android:elevation="16dp"
             android:inputType="number"
             android:textColor="@android:color/holo_green_dark"
